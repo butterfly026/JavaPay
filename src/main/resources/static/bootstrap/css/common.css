@@ -1,0 +1,191 @@
+body {
+    padding-top: 55px;
+}
+
+.navnew {
+    background: -webkit-linear-gradient(left, rgba(47, 164, 231, 1), rgba(47, 164, 231, 0.8)); /* Safari 5.1 - 6.0 */
+    background: -o-linear-gradient(right, rgba(47, 164, 231, 1), rgba(47, 164, 231, 0.8)); /* Opera 11.1 - 12.0 */
+    background: -moz-linear-gradient(right, rgba(47, 164, 231, 1), rgba(47, 164, 231, 0.8)); /* Firefox 3.6 - 15 */
+    background: linear-gradient(to right, rgba(47, 164, 231, 1), rgba(47, 164, 231, 0.8)); /* 标准的语法（必须放在最后） */
+}
+
+.navfont {
+    color: #FFFFFF;
+}
+
+ul.navbar-nav > li > a {
+    color: #FFFFFF;
+}
+
+.nav > li > a:hover,
+.nav > li > a:focus {
+    background-color: #FFFFFF;
+    color: #000000;
+}
+
+.navbar-brand:hover,
+.navbar-brand:focus {
+    text-decoration: none;
+    color: #FFFFFF;
+}
+
+.navbar-toggle {
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.titlebox {
+    padding-top: 10px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.swiper-container1 {
+    margin-top: 20px;
+}
+
+.bimg {
+    width: 100%;
+    height: 200px;
+}
+
+.bimg1 {
+    width: 100%;
+    height: auto;
+}
+
+#banner-list {
+    margin-top: 10px;
+}
+
+.ntitle {
+    width: 100%;
+    margin-top: 10px;
+    color: #FFFFFF;
+    padding: 10px;
+    font-weight: bold;
+}
+
+.zybox {
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 20px;
+}
+
+.imgbox {
+    width: 100%;
+    height: 0;
+    padding-bottom: 50%;
+    overflow: hidden;
+}
+
+.imgbox img {
+    width: 100%;
+}
+
+.zytxt {
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    padding-top: 5px;
+    word-break: keep-all;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #000000;
+}
+
+.imgbox1 {
+    width: 100%;
+    height: 0;
+    padding-bottom: 55%;
+    overflow: hidden;
+    position: relative;
+    background-color: #000000;
+}
+
+.imgbox1 > div {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.imgbox1 > div img {
+    width: auto;
+
+    height: auto;
+
+    max-width: 100%;
+
+    max-height: 100%;
+}
+
+.imgbox1 > div .txt {
+    position: absolute;
+    left: 5px;
+    bottom: 5px;
+    color: #FFFFFF;
+    font-size: 10pt;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 2px;
+    padding-bottom: 3px;
+    border-radius: 12px;
+    word-break: keep-all;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90%;
+}
+
+.ysbox1 {
+    margin-top: 10px;
+    margin-right: -5px;
+    margin-left: 0px;
+}
+
+.ysbox2 {
+    padding-left: 0px;
+    padding-right: 5px;
+    padding-top: 5px;
+}
+
+.footertxt {
+    text-align: center;
+    background-color: #444444;
+    color: #FFFFFF;
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 10px;
+    margin-top: 20px;
+}
+
+.leftxf {
+    z-index: 9999;
+    position: fixed;
+    width: 70px;
+    left: 0px;
+    top: 30%;
+    display: none;
+}
+
+.rightxf {
+    z-index: 9999;
+    position: fixed;
+    width: 70px;
+    right: 10px;
+    top: 30%;
+    display: none;
+}
+
+.xfbtn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 15px;
+    height: 15px;
+}

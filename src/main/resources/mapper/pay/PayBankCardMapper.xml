@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd"
+        >
+<mapper namespace="com.city.city_collector.admin.pay.dao.PayBankCardDao">
+    <!--查询分页数据-->
+    <select id="queryPage" parameterType="Map" resultType="Map">
+        SELECT id,card_no cardNo,card_name cardName,bank_name bankName,bank_subname bankSubname,card_id cardId,
+        card_mobile cardMobile,bank_code bankCode,user_id userId,user_no userNo,user_name userName,user_type userType
+        ,province,city,bank_ifsc bankIfsc,bank_nation bankNation,btype
+        from pay_bank_card
+
+        where del=0
+        <if test="cardNo !=null and cardNo !=''">
+            and card_no like "%"#{cardNo}"%"
+        </if>
+
+        <if test="cardName !=null and cardName !=''">
+            and card_name like "%"#{cardName}"%"
+        </if>
+
+        <if test="bankName !=null and bankName !=''">
+            and bank_name like "%"#{bankName}"%"
+        </if>
+
+        <if test="bankCode !=null and bankCode !=''">
+            and bank_code like "%"#{bankCode}"%"
+        </if>
+
+        <if test="userId !=null and userId !=''">
+            and user_id=#{userId}
+        </if>
+
+        <if test="userNo !=null and userNo !=''">
+            and user_no like "%"#{userNo}"%"
+        </if>
+
+        <if test="btype !=null and btype !=''">
+            and btype=#{btype}
+        </if>
+
+
+        <if test="orderby !=null and orderby !=''">
+            order by ${orderby}
+        </if>
+        <if test="orderby ==null">
+            order by UPDATE_TIME desc
+        </if>
+
+        limit #{start},#{end}
+    </select>
+    <!--查询总体记录数-->
+    <select id="queryCount" parameterType="Map" resultType="int">
+        SELECT count(1) count
+        from pay_bank_card
+        where del=0
+
+        <if test="cardNo !=null and cardNo !=''">
+            and card_no like "%"#{cardNo}"%"
+        </if>
+
+        <if test="cardName !=null and cardName !=''">
+            and card_name like "%"#{cardName}"%"
+        </if>
+
+        <if test="bankName !=null and bankName !=''">
+            and bank_name like "%"#{bankName}"%"
+        </if>
+
+        <if test="bankCode !=null and bankCode !=''">
+            and bank_code like "%"#{bankCode}"%"
+        </if>
+
+        <if test="userId !=null and userId !=''">
+            and user_id=#{userId}
+        </if>
+
+        <if test="userNo !=null and userNo !=''">
+            and user_no like "%"#{userNo}"%"
+        </if>
+        <if test="btype !=null and btype !=''">
+            and btype=#{btype}
+        </if>
+
+    </select>
+    <!--添加记录-->
+    <insert id="addSave" parameterType="com.city.city_collector.admin.pay.entity.PayBankCard" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into
+        pay_bank_card(card_no,card_name,bank_name,bank_subname,card_id,card_mobile,bank_code,user_id,user_no,user_name,province,city,bank_ifsc,bank_nation,btype)
+        value(#{cardNo},#{cardName},#{bankName},#{bankSubname},#{cardId},#{cardMobile},#{bankCode},#{userId},#{userNo},#{userName},#{province},#{city},#{bankIfsc},#{bankNation},#{btype})
+    </insert>
+    <!--查询单条记录-->
+    <select id="querySingle" parameterType="Map" resultType="com.city.city_collector.admin.pay.entity.PayBankCard">
+        select id,card_no cardNo,card_name cardName,bank_name bankName,bank_subname bankSubname,card_id cardId,
+        card_mobile cardMobile,bank_code bankCode,user_id userId,user_no userNo,user_name userName,user_type
+        userType,province,city,bank_ifsc bankIfsc,bank_nation bankNation,btype
+        from pay_bank_card
+        where del=0
+
+        <if test="id !=null">
+            and id=#{id}
+        </if>
+
+        <if test="bankCode !=null and bankCode !=''">
+            and bank_code=#{bankCode}
+        </if>
+
+        limit 1
+    </select>
+    <!-- 查询列表 -->
+    <select id="queryList" parameterType="Map" resultType="com.city.city_collector.admin.pay.entity.PayBankCard">
+        select id,card_no cardNo,card_name cardName,bank_name bankName,bank_subname bankSubname,card_id cardId,
+        card_mobile cardMobile,bank_code bankCode,user_id userId,user_no userNo,user_name userName,user_type
+        userType,province,city,bank_ifsc bankIfsc,bank_nation bankNation,btype
+        from pay_bank_card
+        where del=0
+
+        <if test="cardNo !=null and cardNo !=''">
+            and card_no like "%"#{cardNo}"%"
+        </if>
+
+        <if test="cardName !=null and cardName !=''">
+            and card_name like "%"#{cardName}"%"
+        </if>
+
+        <if test="bankName !=null and bankName !=''">
+            and bank_name like "%"#{bankName}"%"
+        </if>
+
+        <if test="bankCode !=null and bankCode !=''">
+            and bank_code like "%"#{bankCode}"%"
+        </if>
+
+        <if test="userId !=null and userId !=''">
+            and user_id=#{userId}
+        </if>
+
+        <if test="userNo !=null and userNo !=''">
+            and user_no like "%"#{userNo}"%"
+        </if>
+
+        <if test="btype !=null">
+            and btype=#{btype}
+        </if>
+    </select>
+    <!--编辑数据-->
+    <update id="editSave" parameterType="com.city.city_collector.admin.pay.entity.PayBankCard">
+        update pay_bank_card
+        set card_no=#{cardNo},
+        card_name=#{cardName},
+        bank_name=#{bankName},
+        bank_subname=#{bankSubname},
+        card_id=#{cardId},
+        card_mobile=#{cardMobile},
+        bank_code=#{bankCode},
+        province=#{province}
+        ,city=#{city}
+        ,bank_ifsc=#{bankIfsc}
+        ,bank_nation=#{bankNation}
+        ,btype=#{btype}
+        where id=#{id}
+    </update>
+
+    <!--删除数据-->
+    <delete id="delete" parameterType="Map">
+        update pay_bank_card set del=1 where id in (${ids}) and user_id=#{userId}
+    </delete>
+</mapper>

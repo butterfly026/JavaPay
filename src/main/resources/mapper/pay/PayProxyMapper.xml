@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd"
+        >
+<mapper namespace="com.city.city_collector.admin.pay.dao.PayProxyDao">
+    <!--查询分页数据-->
+    <select id="queryPage" parameterType="Map" resultType="Map">
+        select id,username,`name`,money,frozen_money frozenMoney,CREATE_TIME createTime,`status`
+        ,CONCAT('银行卡:',case when cash_mode=1 then concat(cash_commission,'%') else cash_commission end,',Paytm:',case
+        when ptmcash_mode=1 then concat(ptmcash_commission,'%') else ptmcash_commission end,',USDT:',case when
+        usdtcash_mode=1 then concat(usdtcash_commission,'%') else usdtcash_commission end) cashCommission
+        from sys_user
+        where type=1
+        <if test="username !=null and username !=''">
+            and username like "%"#{username}"%"
+        </if>
+
+        <if test="name !=null and name !=''">
+            and `name` like "%"#{name}"%"
+        </if>
+
+        <if test="status !=null and status !=''">
+            and `status`=#{status}
+        </if>
+
+        <if test="orderby !=null and orderby !=''">
+            order by ${orderby}
+        </if>
+        limit #{start},#{end}
+    </select>
+    <!--查询总体记录数-->
+    <select id="queryCount" parameterType="Map" resultType="int">
+        SELECT count(1) count
+        from sys_user
+        where type=1
+        <if test="username !=null and username !=''">
+            and username like "%"#{username}"%"
+        </if>
+
+        <if test="name !=null and name !=''">
+            and `name` like "%"#{name}"%"
+        </if>
+
+        <if test="status !=null and status !=''">
+            and `status`=#{status}
+        </if>
+    </select>
+
+    <select id="querySelectList" parameterType="Map" resultType="com.city.city_collector.admin.system.entity.SysUser">
+        select id,username,`name`,round(IFNULL(money,0),2) money,round(IFNULL(frozen_money,0),2)
+        frozenMoney,round(IFNULL(money,0)-IFNULL(frozen_money,0),2) amount
+        from sys_user where type=1
+    </select>
+
+    <!--添加记录-->
+    <insert id="addSave" parameterType="com.city.city_collector.admin.pay.entity.PayProxy" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into sys_user()
+        value()
+    </insert>
+    <!--查询单条记录-->
+    <select id="querySingle" parameterType="Map" resultType="com.city.city_collector.admin.pay.entity.PayProxy">
+        select id,username,`name`,money,frozen_money frozenMoney,CREATE_TIME createTime,`status`
+        from sys_user where id=#{id} and del=0
+    </select>
+    <!--编辑数据-->
+    <update id="editSave" parameterType="com.city.city_collector.admin.system.entity.SysUser">
+        update sys_user
+        set `name`=#{name},`status`=#{status},api=#{api}
+        ,cash_commission=#{cashCommission},min_commission=#{minCommission}
+        ,cash_mode=#{cashMode},ptmcash_commission=#{ptmcashCommission},ptmcash_mode=#{ptmcashMode}
+        ,usdtcash_commission=#{usdtcashCommission},usdtcash_mode=#{usdtcashMode}
+        ,mcash_commission=#{mcashCommission},mptmcash_commission=#{mptmcashCommission},musdtcash_commission=#{musdtcashCommission}
+        where id=#{id}
+    </update>
+
+    <!--删除数据-->
+    <delete id="delete" parameterType="java.lang.String">
+        delete from sys_user where id in (${_parameter})
+    </delete>
+</mapper>

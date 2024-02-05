@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd"
+        >
+<mapper namespace="com.city.city_collector.admin.system.dao.SysImageDao">
+    <!--查询分页数据-->
+    <select id="queryPage" parameterType="Map" resultType="Map">
+        select img.id,img.`name`,img.`path`,img.thumb_path thumbPath,img.`status`,img.size,img.type,fd.`name`
+        folderName,
+        u.`name` userName,u.username userUserName,img.create_time createTime
+        from sys_image img
+        left join sys_folder fd on img.folder_id=fd.id
+        left join sys_user u on img.user_id=u.id
+        <where>
+            <if test="name !=null and name !=''">
+                and img.`name` like "%"#{name}"%"
+            </if>
+            <if test="status !=null and status !=''">
+                and img.`status`=#{status}
+            </if>
+            <if test="folderId !=null">
+                and img.folder_id=#{folderId}
+            </if>
+        </where>
+        order by img.create_time desc
+        limit #{start},#{end}
+    </select>
+    <!--查询总体记录数-->
+    <select id="queryCount" parameterType="Map" resultType="int">
+        SELECT count(1) count
+        from sys_image img
+        left join sys_folder fd on img.folder_id=fd.id
+        left join sys_user u on img.user_id=u.ID
+        <where>
+            <if test="name !=null and name !=''">
+                and img.`name` like "%"#{name}"%"
+            </if>
+            <if test="status !=null and status !=''">
+                and img.`status`=#{status}
+            </if>
+            <if test="folderId !=null">
+                and img.folder_id=#{folderId}
+            </if>
+        </where>
+    </select>
+    <!--添加记录-->
+    <insert id="addSave" parameterType="com.city.city_collector.admin.system.entity.SysImage" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into sys_image(`name`,`path`,folder_id,`status`,`size`,`type`,user_id,thumb_path)
+        value(#{name},#{path},#{folderId},#{status},#{size},#{type},#{userId},#{thumbPath})
+    </insert>
+    <!--查询单条记录-->
+    <select id="querySingle" parameterType="Map" resultType="com.city.city_collector.admin.system.entity.SysImage">
+        select img.id,img.`name`,img.`path`,img.thumb_path thumbPath,img.`status`,img.size,img.type,fd.`name`
+        folderName,u.`name` userName,u.username userUserName
+        from sys_image img
+        left join sys_folder fd on img.folder_id=fd.id
+        left join sys_user u on img.user_id=u.ID
+        where img.id=#{id}
+    </select>
+    <!--编辑数据-->
+    <update id="editSave" parameterType="com.city.city_collector.admin.system.entity.SysImage">
+        update sys_image
+        <set>
+            <if test="name !=null and name !=''">
+                name=#{name},
+            </if>
+            <if test="folderId !=null">
+                folder_id=#{folderId},
+            </if>
+            <if test="status !=null and status !=''">
+                status=#{status},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <!--编辑数据-->
+    <update id="updateStatusByFolder" parameterType="com.city.city_collector.admin.system.entity.SysImage">
+        update sys_image set status=#{status}
+        where folder_id=#{folderId}
+    </update>
+
+    <!--根据ID批量更新状态-->
+    <update id="updateStatusByIds" parameterType="Map">
+        update sys_image set status=#{status}
+        where id in (${ids})
+    </update>
+    <!--删除数据-->
+    <delete id="delete" parameterType="java.lang.String">
+        delete from sys_image where id in (#{_parameter})
+    </delete>
+
+    <!-- 查询首页图片列表 -->
+    <select id="queryIndexImgList" resultType="java.lang.String">
+        select `path`
+        from sys_image img
+        where folder_id=3 and `status`=1
+    </select>
+</mapper>

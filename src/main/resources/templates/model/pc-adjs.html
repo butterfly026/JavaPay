@@ -1,0 +1,109 @@
+$.ajax({
+type: 'get',
+url: "${context}/ad",
+data: {},
+cache: false,
+success: function(data) {
+try {
+if(data.code=="200"){
+var list=data.result;
+//roll
+var $str='';
+var $url="";
+
+for(var i=0;i
+<list.length;i++){
+if(list[i].type==0){
+$url="javascript:;";
+if(list[i].url){
+$url=list[i].url;
+}
+$str+='<a href="'+list[i].url+'" class="swiper-slide"><img src="'+list[i].img+'" class="bimg"/></a>';
+}
+}
+if($str!=""){
+$(".swiper-wrapper").html($str);
+var swiper = new Swiper('.swiper-container1', {
+pagination: '.swiper-pagination1',
+paginationClickable: true,
+spaceBetween: 30,
+centeredSlides: true,
+autoplay: 2500,
+autoplayDisableOnInteraction: false,
+loop: true
+});
+}
+
+$str='';
+$url="";
+for(var i=0;i
+<list.length;i++){
+if(list[i].type==1){
+$url="javascript:;";
+if(list[i].url && list[i].url!=""){
+$url=list[i].url;
+}
+$str+='<a href="'+list[i].url+'"><img src="'+list[i].img+'" class="bimg1"/></a>';
+}
+}
+
+$("#banner-list").html($str);
+
+$str='';
+$url="";
+for(var i=0;i
+<list.length;i++){
+if(list[i].type==2){
+$url="javascript:;";
+if(list[i].url && list[i].url!=""){
+$url=list[i].url;
+}
+$str+='<a href="'+list[i].url+'"><img src="'+list[i].img+'" class="bimg1"/></a>';
+}
+}
+
+$("#btbanner-list").html($str);
+
+for(var i=0;i
+<list.length;i++){
+if(list[i].type==3){
+$("#leftadv").attr("src",list[i].img);
+if(list[i].url && list[i].url!=""){
+$("#leftadv").click(function(){
+window.open(list[i].url);
+});
+}
+$(".leftxf").show();
+break;
+}
+}
+
+for(var i=0;i
+<list.length;i++){
+if(list[i].type==4){
+$("#rightadv").attr("src",list[i].img);
+if(list[i].url && list[i].url!=""){
+$("#leftadv").click(function(){
+window.open(list[i].url);
+});
+}
+$(".rightxf").show();
+break;
+}
+}
+
+
+}
+} catch(e) {
+}
+},
+error: function(xhr, desc, err) {
+}
+});
+
+$("#xflbtn").click(function(){
+$(".leftxf").hide();
+});
+$("#xfrbtn").click(function(){
+$(".rightxf").hide();
+});

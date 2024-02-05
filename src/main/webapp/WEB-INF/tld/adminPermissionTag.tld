@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="GBK"?>
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee web-jsptaglibrary_2_0.xsd"
+        version="2.0">
+    <tlib-version>1.0</tlib-version>
+    <short-name>adminPermission</short-name>
+    <uri>http://adminpermission.city.com</uri>
+    <tag>
+        <!-- 定义标签名：权限验证标签 -->
+        <name>hasPermission</name>
+        <!-- 定义标签处理类 -->
+        <tag-class>com.city.adminpermission.tag.AdminPermissionTag</tag-class>
+        <!-- 定义标签体 -->
+        <body-content>jsp</body-content>
+        <attribute>
+            <name>permission</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+    </tag>
+</taglib>

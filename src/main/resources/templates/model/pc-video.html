@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <@includeNew path="/model/common/pc-header.html" encoding="UTF-8">
+</
+@includeNew>
+<script type="text/javascript" charset="utf-8" src="${context}/bootstrap/clappr/clappr.js"></script>
+</head>
+<body>
+<div class="container">
+
+    <@includeNew path="/model/common/pc-column.html" encoding="UTF-8">
+</
+@includeNew>
+
+<div id="banner-roll" class="swiper-container swiper-container1">
+    <div class="swiper-wrapper">
+        <!--
+        <a href="javascript:;" class="swiper-slide"><img src="https://pppp.642p.com/89/2020/04/WYqfu03e.gif" class="bimg" /></a>
+        -->
+    </div>
+    <div class="swiper-pagination swiper-pagination1"></div>
+</div>
+
+<div id="banner-list">
+    <!--
+    <a href="javascript:;"><img src="https://pppp.642p.com/89/2020/04/WYqfu03e.gif" class="bimg1" /></a>
+    -->
+</div>
+
+<div class="navnew ntitle" id="vname">
+    ${vname }
+</div>
+
+<div id="player"></div>
+
+<div id="btbanner-list"></div>
+<@includeNew path="/model/common/pc-footer.html" encoding="UTF-8">
+</
+@includeNew>
+
+</div>
+<@includeNew path="/model/common/mb-xfadv.html" encoding="UTF-8">
+</@includeNew>
+
+<script>
+
+    $(function () {
+
+
+        var player = new Clappr.Player({
+            source: "${vurl}", parentId: "#player", width: "100%", position: 'top-right',
+        });
+
+    <@includeNew
+        path = "/model/common/pc-adjs.html"
+        encoding = "UTF-8" > < /@includeNew>
+    });
+
+</script>
+</body>
+</html>

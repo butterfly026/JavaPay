@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd"
+        >
+<mapper namespace="com.city.city_collector.admin.pay.dao.PayClientDao">
+    <!--查询分页数据-->
+    <select id="queryPage" parameterType="Map" resultType="Map">
+        select id,username,`name`,descript,url,merchant_no merchantNo,gotype,money,frozen_money frozenMoney,descript,
+        IFNULL(a.jrdds,0) jrdds,IFNULL(a.jrcg,0) jrcg,
+        case when a.jrdds is null then '0%' else CONCAT(round(a.jrcg/a.jrdds*100,2),'%') end jrcgl,IFNULL(a.dayMoney,0)
+        dayMoney,
+        CREATE_TIME createTime,`status`,cash_commission cashCommission,cash_ratio cashRatio,merchant_ip merchantIp,
+        case when su.payword is not null then '已设置' else '未设置' end payword,paykeyname
+        from sys_user su
+
+        left join (
+        select client_id clientId,count(1) jrdds,sum(case when po.order_status=1 then 1 else 0 end) jrcg
+        ,sum(case when po.order_status=1 then money else 0 end) dayMoney
+        from pay_order po
+        <![CDATA[ where id>=(select min(id) from pay_order where CREATE_TIME >=  CURRENT_DATE) ]]>
+        GROUP BY client_id
+        ) a on su.id=a.clientId
+
+        where type=3
+
+        <if test="username !=null and username !=''">
+            and username like "%"#{username}"%"
+        </if>
+
+        <if test="name !=null and name !=''">
+            and `name` like "%"#{name}"%"
+        </if>
+
+        <if test="status !=null and status !=''">
+            and `status`=#{status}
+        </if>
+
+        <if test="gotype !=null and gotype !=''">
+            and `gotype`=#{gotype}
+        </if>
+
+        <if test="orderby !=null and orderby !=''">
+            order by ${orderby}
+        </if>
+
+        limit #{start},#{end}
+    </select>
+    <!--查询总体记录数-->
+    <select id="queryCount" parameterType="Map" resultType="int">
+        SELECT count(1) count
+        from sys_user
+        where type=3
+
+        <if test="username !=null and username !=''">
+            and username like "%"#{username}"%"
+        </if>
+
+        <if test="name !=null and name !=''">
+            and `name` like "%"#{name}"%"
+        </if>
+
+        <if test="status !=null and status !=''">
+            and `status`=#{status}
+        </if>
+
+    </select>
+
+    <select id="querySelectList" parameterType="Map" resultType="com.city.city_collector.admin.system.entity.SysUser">
+        select id,username,`name`,round(IFNULL(money,0),2) money,round(IFNULL(frozen_money,0),2)
+        frozenMoney,round(IFNULL(money,0)-IFNULL(frozen_money,0),2) amount
+        from sys_user where type=3
+    </select>
+
+    <select id="querySelectListAble" parameterType="Map"
+            resultType="com.city.city_collector.admin.system.entity.SysUser">
+        select id,username,`name`,round(IFNULL(money,0),2) money,round(IFNULL(frozen_money,0),2)
+        frozenMoney,round(IFNULL(money,0)-IFNULL(frozen_money,0),2) amount
+        from sys_user where type=3 and status =1
+    </select>
+
+    <!--添加记录-->
+    <insert id="addSave" parameterType="com.city.city_collector.admin.pay.entity.PayClient" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into sys_user()
+        value()
+    </insert>
+    <!--查询单条记录-->
+    <select id="querySingle" parameterType="Map" resultType="com.city.city_collector.admin.pay.entity.PayClient">
+        select
+        from sys_user where id=#{id}
+    </select>
+    <!--编辑数据-->
+    <update id="editSave" parameterType="com.city.city_collector.admin.system.entity.SysUser">
+        update sys_user
+        set paykey=#{paykey},paykeyname=#{paykeyname}
+        <if test="name !=null">
+            ,name=#{name}
+        </if>
+        <if test="descript !=null">
+            ,descript=#{descript}
+        </if>
+        <if test="url !=null">
+            ,url=#{url}
+        </if>
+        <if test="status !=null">
+            ,status=#{status}
+        </if>
+        <if test="api !=null">
+            ,api=#{api}
+        </if>
+        <if test="gotype !=null">
+            ,gotype=#{gotype}
+        </if>
+
+        <if test="merchantNo !=null">
+            ,merchant_no=#{merchantNo}
+        </if>
+        <if test="merchantMy !=null">
+            ,merchant_my=#{merchantMy}
+        </if>
+        <if test="urlpay !=null">
+            ,urlpay=#{urlpay}
+        </if>
+
+        <if test="urlcash !=null">
+            ,urlcash=#{urlcash}
+        </if>
+
+        <if test="merchantIp !=null">
+            ,merchant_ip=#{merchantIp}
+        </if>
+
+        <if test="urlquery !=null">
+            ,urlquery=#{urlquery}
+        </if>
+
+        where id=#{id}
+    </update>
+
+    <update id="updatePayword" parameterType="com.city.city_collector.admin.system.entity.SysUser">
+        update sys_user
+        set payword=#{payword}
+        where id=#{id}
+    </update>
+
+    <!--删除数据-->
+    <delete id="delete" parameterType="java.lang.String">
+        delete from sys_user where id in (${_parameter})
+    </delete>
+</mapper>

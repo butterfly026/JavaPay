@@ -1,0 +1,185 @@
+.webuploader-container {
+    position: relative;
+}
+
+.webuploader-element-invisible {
+    position: absolute !important;
+    clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+    clip: rect(1px, 1px, 1px, 1px);
+}
+
+.webuploader-pick {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    background: #00b7ee;
+    padding: 5px 5px;
+    color: #fff;
+    text-align: center;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.webuploader-pick-hover {
+    background: #00a2d4;
+}
+
+.webuploader-pick-disable {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.webuploader-pick-selectimage {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    background: #00b7ee;
+    padding: 5px 5px;
+    color: #fff;
+    text-align: center;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.webuploader-pick-selectimage:hover {
+    background: #00a2d4;
+}
+
+.webuploader-pick-uploadimage {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    background: #32AA9F;
+    padding: 5px 5px;
+    color: #fff;
+    text-align: center;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.webuploader-pick-uploadimage:hover {
+    background: #00a2d4;
+}
+
+.upload-image-container {
+    width: 100%;
+    border: 1px solid #e6e6e6;
+    padding: 5px;
+    overflow-y: auto;
+}
+
+.imglist {
+    font: 12px verdana, arial, sans-serif; /* 设置文字大小和字体样式 */
+}
+
+.imglist, .imglist li {
+    list-style: none; /* 将默认的列表符号去掉 */
+    padding: 0; /* 将默认的内边距去掉 */
+    margin: 0; /* 将默认的外边距去掉 */
+}
+
+.imglist li {
+    margin-top: 5px;
+    margin-left: 5px; /* 设置内边距 */
+    float: left; /* 往左浮动 */
+
+    padding: 5px;
+    background-color: #FFFFFF;
+}
+
+.imglist li:hover {
+    background-color: #F4F4F4;
+    cursor: pointer;
+}
+
+.imglist li .img-container {
+    position: relative;
+}
+
+.imglist li .img-container .timg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.imglist li .img-container .timg img {
+    max-height: 60px;
+    max-width: 60px;
+    width: expression(this.width > 60 && this.width > this.height ? 60 : auto);
+    height: expression(this.height > 60 ? 60 : auto);
+}
+
+.imglist li .img-container .info {
+    width: 100%;
+    position: absolute;
+    left: 0px;
+    top: 20px;
+    color: #ff0000;
+}
+
+.imglist li .img-container .delbtn-bg {
+    width: 100%;
+    position: absolute;
+    top: 0px;
+    height: 15px;
+    background-color: #000000;
+    filter: alpha(Opacity=80);
+    -moz-opacity: 0.6;
+    opacity: 0.6;
+    display: none;
+}
+
+.imglist li .img-container .delbtn-img {
+    width: auto;
+    height: 15px;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+}
+
+.imglist li .img-container .upload-progress {
+    background-color: #F4F4F4;
+    height: 10px;
+    width: 100%;
+    position: absolute;
+    bottom: 0px;
+    display: none;
+}
+
+.imglist li .img-container .upload-progress .progress-length {
+    background-color: #00B7EE;
+    height: 10px;
+    width: 0px;
+    position: absolute;
+    bottom: 0px;
+}
+
+.upload-progress-error {
+    background-color: #FF0000;
+}
+
+.imglist li .img-container .upload-success {
+    height: 15px;
+    width: auto;
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    display: none;
+}
+
+.imglist li .txt {
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+}
+
+.upload-image-container .upload-all-info {
+    width: 100%;
+    text-align: right;
+    color: #FF0000;
+    font-size: 10px;
+    display: none;
+}

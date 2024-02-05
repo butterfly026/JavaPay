@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd"
+        >
+<mapper namespace="com.city.city_collector.admin.pay.dao.PayPlatformStatisDao">
+    <!--查询分页数据-->
+    <select id="queryPage" parameterType="Map" resultType="Map">
+        select paytime paytime,profit profit,succount succount,total total,cashprofit cashprofit,profit+cashprofit
+        totalprofit,case when total=0 then '0%' else concat(FORMAT(succount*100/total,2),'%') end ratio
+        from (
+        select paytime,sum(profit) profit,sum(succount) succount,sum(total) total,sum(cashprofit) cashprofit
+        from (
+        select paytime,sum(profit) profit,sum(succount) succount,sum(total) total,0 cashprofit
+        from (
+        select case when order_status=1 then 1 else 0 end succount,case when order_status=1 then IFNULL(profit,0) else 0
+        end profit,DATE_FORMAT(create_time,${timeFormat}) paytime,1 total
+        from pay_order
+        where create_time is not null and xnorder=0
+        <if test="startTime !=null and startTime !=''">
+            and create_time <![CDATA[  >=  ]]> #{startTime}
+        </if>
+        <if test="endTime !=null and endTime !=''">
+            and create_time <![CDATA[  <  ]]> #{endTime}
+        </if>
+        ) a
+        GROUP BY paytime
+        union all
+        select paytime,0 profit,0 succount,0 total,sum(cashprofit) cashprofit
+        from (
+        select DATE_FORMAT(UPDATE_TIME,${timeFormat}) paytime,IFNULL(commission,0)-IFNULL(proxy_money,0) cashprofit
+        from pay_cash
+        where pay_status=5 and user_type=0
+        <if test="startTime !=null and startTime !=''">
+            and pay_time <![CDATA[  >=  ]]> #{startTime}
+        </if>
+        <if test="endTime !=null and endTime !=''">
+            and pay_time <![CDATA[  <  ]]> #{endTime}
+        </if>
+        ) a
+        GROUP BY paytime
+        ) b
+        GROUP BY paytime
+        ) c
+
+        <if test="orderby !=null and orderby !=''">
+            order by ${orderby}
+        </if>
+        <if test="orderby ==null">
+            order by paytime desc
+        </if>
+        limit #{start},#{end}
+    </select>
+    <!--查询总体记录数-->
+    <select id="queryCount" parameterType="Map" resultType="int">
+        select count(1) count
+        from (
+        select paytime
+        from (
+        select DATE_FORMAT(create_time,${timeFormat}) paytime
+        from pay_order
+        where create_time is not null
+        <if test="startTime !=null and startTime !=''">
+            and create_time <![CDATA[  >=  ]]> #{startTime}
+        </if>
+        <if test="endTime !=null and endTime !=''">
+            and create_time <![CDATA[  <  ]]> #{endTime}
+        </if>
+        ) a
+        GROUP BY paytime
+        union
+        select paytime
+        from (
+        select DATE_FORMAT(UPDATE_TIME,${timeFormat}) paytime
+        from pay_cash
+        where pay_status=5 and user_type=0
+        <if test="startTime !=null and startTime !=''">
+            and pay_time <![CDATA[  >=  ]]> #{startTime}
+        </if>
+        <if test="endTime !=null and endTime !=''">
+            and pay_time <![CDATA[  <  ]]> #{endTime}
+        </if>
+        ) a
+        GROUP BY paytime
+        ) b
+    </select>
+
+    <!-- 导出Excel -->
+    <select id="queryExportList" parameterType="Map" resultType="Map">
+        select paytime paytime,profit profit,succount succount,total total,cashprofit cashprofit,profit+cashprofit
+        totalprofit,case when total=0 then '0%' else concat(FORMAT(succount*100/total,2),'%') end ratio
+        from (
+        select paytime,sum(profit) profit,sum(succount) succount,sum(total) total,sum(cashprofit) cashprofit
+        from (
+        select paytime,sum(profit) profit,sum(succount) succount,sum(total) total,0 cashprofit
+        from (
+        select case when order_status=1 then 1 else 0 end succount,case when order_status=1 then IFNULL(profit,0) else 0
+        end profit,DATE_FORMAT(create_time,${timeFormat}) paytime,1 total
+        from pay_order
+        where create_time is not null and xnorder=0
+        <if test="startTime !=null and startTime !=''">
+            and create_time <![CDATA[  >=  ]]> #{startTime}
+        </if>
+        <if test="endTime !=null and endTime !=''">
+            and create_time <![CDATA[  <  ]]> #{endTime}
+        </if>
+        ) a
+        GROUP BY paytime
+        union all
+        select paytime,0 profit,0 succount,0 total,sum(cashprofit) cashprofit
+        from (
+        select DATE_FORMAT(UPDATE_TIME,${timeFormat}) paytime,IFNULL(commission,0)-IFNULL(proxy_money,0) cashprofit
+        from pay_cash
+        where pay_status=5 and user_type=0
+        <if test="startTime !=null and startTime !=''">
+            and pay_time <![CDATA[  >=  ]]> #{startTime}
+        </if>
+        <if test="endTime !=null and endTime !=''">
+            and pay_time <![CDATA[  <  ]]> #{endTime}
+        </if>
+        ) a
+        GROUP BY paytime
+        ) b
+        GROUP BY paytime
+        ) c
+
+        <if test="orderby !=null and orderby !=''">
+            order by ${orderby}
+        </if>
+        <if test="orderby ==null">
+            order by paytime desc
+        </if>
+    </select>
+
+    <!--添加记录-->
+    <insert id="addSave" parameterType="com.city.city_collector.admin.pay.entity.PayPlatformStatis"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into pay_order()
+        value()
+    </insert>
+    <!--查询单条记录-->
+    <select id="querySingle" parameterType="Map"
+            resultType="com.city.city_collector.admin.pay.entity.PayPlatformStatis">
+        select
+        from pay_order where id=#{id}
+    </select>
+    <!--编辑数据-->
+    <update id="editSave" parameterType="com.city.city_collector.admin.pay.entity.PayPlatformStatis">
+        update pay_order
+        <set>
+            <!--
+                <if test="paramgroup_id !=null and paramgroup_id !=''">
+                      paramgroup_id=#{paramgroup_id},
+                  </if>
+                -->
+
+        </set>
+        where id=#{id}
+    </update>
+
+    <!--删除数据-->
+    <delete id="delete" parameterType="java.lang.String">
+        delete from pay_order where id in (${_parameter})
+    </delete>
+</mapper>

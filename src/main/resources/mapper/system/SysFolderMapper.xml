@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd"
+        >
+<mapper namespace="com.city.city_collector.admin.system.dao.SysFolderDao">
+    <!--查询分页数据-->
+    <select id="queryPage" parameterType="Map" resultType="Map">
+        select fd1.id id,fd1.`name` `name`,fd1.fid fid,fd2.`name` fname,fd1.user_id userId,fd1.type `type`
+        from sys_folder fd1
+        left join sys_folder fd2 on fd1.fid=fd2.id
+        <where>
+            <if test="name !=null and name !=''">
+                and fd1.`name` like "%"#{name}"%"
+            </if>
+            <if test="type !=null and type !=''">
+                and fd1.`type`=#{type}
+            </if>
+        </where>
+        limit #{start},#{end}
+    </select>
+    <!--查询总体记录数-->
+    <select id="queryCount" parameterType="Map" resultType="int">
+        SELECT count(1) count
+        from sys_folder fd1
+        left join sys_folder fd2 on fd1.fid=fd2.id
+        <where>
+            <if test="name !=null and name !=''">
+                and fd1.`name` like "%"#{name}"%"
+            </if>
+            <if test="type !=null and type !=''">
+                and fd1.`type`=#{type}
+            </if>
+        </where>
+    </select>
+
+    <!--查询列表数据-->
+    <select id="queryList" parameterType="Map" resultType="Map">
+        select fd1.id id,fd1.`name` `name`,fd1.fid fid,fd2.`name` fname,fd1.user_id userId,fd1.type `type`
+        from sys_folder fd1
+        left join sys_folder fd2 on fd1.fid=fd2.id
+        <where>
+            <if test="name !=null and name !=''">
+                and fd1.`name` like "%"#{name}"%"
+            </if>
+            <if test="type !=null and type !=''">
+                and fd1.`type`=#{type}
+            </if>
+        </where>
+    </select>
+    <!--添加记录-->
+    <insert id="addSave" parameterType="com.city.city_collector.admin.system.entity.SysFolder" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into sys_folder(`name`,fid,user_id,`type`)
+        value(#{name},#{fid},#{userId},#{type})
+    </insert>
+    <!--查询单条记录-->
+    <select id="querySingle" parameterType="Map" resultType="com.city.city_collector.admin.system.entity.SysFolder">
+        select fd1.id id,fd1.`name` `name`,fd1.fid fid,fd2.`name` fname,fd1.user_id userId,fd1.type `type`
+        from sys_folder fd1
+        left join sys_folder fd2 on fd1.fid=fd2.id
+        where fd1.id=#{id}
+    </select>
+    <!--编辑数据-->
+    <update id="editSave" parameterType="com.city.city_collector.admin.system.entity.SysFolder">
+        update sys_folder
+        set fid=#{fid}
+        <if test="name !=null and name !=''">
+            ,name=#{name}
+        </if>
+        where id=#{id}
+    </update>
+
+    <!--删除数据-->
+    <delete id="delete" parameterType="java.lang.String">
+        delete from sys_folder where id in (#{_parameter})
+    </delete>
+</mapper>

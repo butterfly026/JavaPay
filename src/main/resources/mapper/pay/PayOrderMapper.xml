@@ -1,0 +1,930 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd"
+        >
+<mapper namespace="com.city.city_collector.admin.pay.dao.PayOrderDao">
+    <!--查询分页数据-->
+    <select id="queryPage" parameterType="Map" resultType="Map">
+        select po.id id,po.sn sn,po.tname tname,po.client_no clientNo,po.client_sn clientSn,po.merchant_no merchantNo,
+        po.merchant_sn merchantSn,po.money money,po.amount amount,po.pay_url payUrl,po.CREATE_TIME createTime,
+        po.pay_time payTime,po.order_status orderStatus,po.deal_status notifyStatus,po.xnprofit profit,po.mend mend
+        ,po.order_type orderType,po.platform platform
+        from pay_order po
+        <where>
+            <if test="typeId !=null and typeId !=''">
+                and po.channel_type_id=#{typeId}
+            </if>
+
+            <if test="clientId !=null and clientId !=''">
+                and po.client_id=#{clientId}
+            </if>
+
+            <if test="clientSn !=null and clientSn !=''">
+                and po.client_sn=#{clientSn}
+            </if>
+
+            <if test="orderStatus !=null and orderStatus !=''">
+                and po.order_status=#{orderStatus}
+            </if>
+
+            <if test="proxyId !=null and proxyId !=''">
+                and po.proxy_id=#{proxyId}
+            </if>
+
+            <if test="mend_status !=null and mend_status !='' and mend_status !=0">
+                and po.mend=#{mend_status}
+            </if>
+
+            <if test="sn !=null and sn !=''">
+                and po.sn=#{sn}
+            </if>
+
+            <if test="merchantId !=null and merchantId !=''">
+                and po.merchant_id=#{merchantId}
+            </if>
+
+            <if test="merchantSn !=null and merchantSn !=''">
+                and po.merchant_sn=#{merchantSn}
+            </if>
+
+            <if test="startTime !=null and startTime !=''">
+                and po.CREATE_TIME <![CDATA[  >=  ]]> #{startTime}
+            </if>
+
+            <if test="endTime !=null and endTime !=''">
+                and po.CREATE_TIME <![CDATA[  <  ]]>#{endTime}
+            </if>
+
+            <if test="merchantIds !=null and merchantIds !=''">
+                and po.merchant_id in (${merchantIds})
+            </if>
+            <if test="amountEq !=null and amountEq !=''">
+                and money=#{amountEq}
+            </if>
+            <if test="client_channel_id !=null and client_channel_id !=''">
+                and client_channel_id=#{client_channel_id}
+            </if>
+
+            <if test="paystartTime !=null and paystartTime !=''">
+                and pay_time <![CDATA[  >=  ]]> #{paystartTime}
+            </if>
+
+            <if test="payendTime !=null and payendTime !=''">
+                and pay_time <![CDATA[  <  ]]>#{payendTime}
+            </if>
+        </where>
+
+        <if test="orderby !=null and orderby !=''">
+            order by ${orderby}
+        </if>
+        <if test="orderby ==null">
+            order by po.CREATE_TIME desc
+        </if>
+        limit #{start},#{end}
+    </select>
+    <!-- 获取分页查询的id -->
+    <select id="queryPageIds" parameterType="Map" resultType="Long">
+        select id
+        from pay_order
+        <where>
+            <if test="typeId !=null and typeId !=''">
+                and channel_type_id=#{typeId}
+            </if>
+
+            <if test="clientId !=null and clientId !=''">
+                and client_id=#{clientId}
+            </if>
+
+            <if test="clientSn !=null and clientSn !=''">
+                and client_sn=#{clientSn}
+            </if>
+
+            <if test="orderStatus !=null and orderStatus !=''">
+                and order_status=#{orderStatus}
+            </if>
+
+            <if test="proxyId !=null and proxyId !=''">
+                and proxy_id=#{proxyId}
+            </if>
+
+            <if test="mend_status !=null and mend_status !='' and mend_status !=0">
+                and mend=#{mend_status}
+            </if>
+
+            <if test="sn !=null and sn !=''">
+                and sn=#{sn}
+            </if>
+
+            <if test="merchantId !=null and merchantId !=''">
+                and merchant_id=#{merchantId}
+            </if>
+
+            <if test="merchantSn !=null and merchantSn !=''">
+                and merchant_sn=#{merchantSn}
+            </if>
+
+            <if test="startTime !=null and startTime !=''">
+                and CREATE_TIME <![CDATA[  >=  ]]> #{startTime}
+            </if>
+
+            <if test="endTime !=null and endTime !=''">
+                and CREATE_TIME <![CDATA[  <  ]]>#{endTime}
+            </if>
+
+            <if test="merchantIds !=null and merchantIds !=''">
+                and merchant_id in (${merchantIds})
+            </if>
+
+            <if test="amountEq !=null and amountEq !=''">
+                and money=#{amountEq}
+            </if>
+
+            <if test="client_channel_id !=null and client_channel_id !=''">
+                and client_channel_id=#{client_channel_id}
+            </if>
+
+            <if test="paystartTime !=null and paystartTime !=''">
+                and pay_time <![CDATA[  >=  ]]> #{paystartTime}
+            </if>
+
+            <if test="payendTime !=null and payendTime !=''">
+                and pay_time <![CDATA[  <  ]]>#{payendTime}
+            </if>
+
+        </where>
+
+        <if test="orderby !=null and orderby !=''">
+            order by ${orderby}
+        </if>
+        <if test="orderby ==null">
+            order by CREATE_TIME desc
+        </if>
+        limit #{start},#{end}
+    </select>
+    <!-- 新分页查询 -->
+    <select id="queryPageNew" parameterType="Map" resultType="Map">
+        select po.id id,po.sn sn,po.tname tname,po.client_no client_no,po.client_sn client_sn,po.merchant_no
+        merchant_no,
+        po.merchant_sn merchant_sn,po.money money,po.amount amount,po.pay_url pay_url,po.CREATE_TIME create_time,
+        po.pay_time pay_time,po.order_status order_status,po.deal_status notifyStatus,po.xnprofit profit,po.mend mend
+        ,po.order_type orderType, po.platform platform, b.name client_channel_no
+        from pay_order po left join pay_client_channel as b on po.client_channel_id = b.ID
+        where po.id in (${ids})
+        <if test="orderby !=null and orderby !=''">
+            order by ${orderby}
+        </if>
+        <if test="orderby ==null">
+            order by po.CREATE_TIME desc
+        </if>
+    </select>
+    <!--查询总体记录数-->
+    <select id="queryCount" parameterType="Map" resultType="int">
+        SELECT count(1) count
+        from pay_order po
+        where id is not null
+        <if test="typeId !=null and typeId !=''">
+            and po.channel_type_id=#{typeId}
+        </if>
+
+        <if test="clientId !=null and clientId !=''">
+            and po.client_id=#{clientId}
+        </if>
+
+        <if test="clientSn !=null and clientSn !=''">
+            and po.client_sn=#{clientSn}
+        </if>
+
+        <if test="orderStatus !=null and orderStatus !=''">
+            and po.order_status=#{orderStatus}
+        </if>
+
+        <if test="proxyId !=null and proxyId !=''">
+            and po.proxy_id=#{proxyId}
+        </if>
+
+        <if test="mend_status !=null and mend_status !='' and mend_status !=0 ">
+            and po.mend=#{mend_status}
+        </if>
+
+        <if test="sn !=null and sn !=''">
+            and po.sn=#{sn}
+        </if>
+
+        <if test="merchantId !=null and merchantId !=''">
+            and po.merchant_id=#{merchantId}
+        </if>
+
+        <if test="merchantSn !=null and merchantSn !=''">
+            and po.merchant_sn=#{merchantSn}
+        </if>
+
+        <if test="startTime !=null and startTime !=''">
+            and po.CREATE_TIME <![CDATA[  >=  ]]> #{startTime}
+        </if>
+
+        <if test="endTime !=null and endTime !=''">
+            and po.CREATE_TIME <![CDATA[  <  ]]>#{endTime}
+        </if>
+
+        <if test="merchantIds !=null and merchantIds !=''">
+            and merchant_id in (${merchantIds})
+        </if>
+        <if test="amountEq !=null and amountEq !=''">
+            and money=#{amountEq}
+        </if>
+
+        <if test="client_channel_id !=null and client_channel_id !=''">
+            and client_channel_id=#{client_channel_id}
+        </if>
+
+        <if test="paystartTime !=null and paystartTime !=''">
+            and pay_time <![CDATA[  >=  ]]> #{paystartTime}
+        </if>
+
+        <if test="payendTime !=null and payendTime !=''">
+            and pay_time <![CDATA[  <  ]]>#{payendTime}
+        </if>
+    </select>
+    <!--添加记录-->
+    <insert id="addSave" parameterType="com.city.city_collector.admin.pay.entity.PayOrder" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into pay_order(sn,client_id,client_sn,merchant_id,merchant_sn,
+        money,amount,pay_time,channel_type_id,order_status,notify_status,pay_url,remark,
+        client_info,notify_url,product_name,client_channel_id,merchant_channel_id,profit,xnprofit
+        ,merchant_no,client_no,tname,proxy_id,proxy_no,order_type,client_ratio,merchant_ratio,proxy_ratio)
+        value(#{sn},#{clientId},#{clientSn},#{merchantId},#{merchantSn},
+        #{money},#{amount},#{payTime},#{channelTypeId},#{orderStatus},#{notifyStatus},#{payUrl},#{remark},
+        #{clientInfo},#{notifyUrl},#{productName},#{clientChannelId},#{merchantChannelId},#{profit},#{xnprofit}
+        ,#{merchantNo},#{clientNo},#{tname},#{proxyId},#{proxyNo},#{orderType},#{clientRatio},#{merchantRatio},#{proxyRatio})
+    </insert>
+    <!--查询单条记录-->
+    <select id="querySingle" parameterType="Map" resultType="com.city.city_collector.admin.pay.entity.PayOrder">
+        select id,sn,client_id clientId,client_sn clientSn,merchant_id merchantId,merchant_sn merchantSn,
+        money,amount,pay_time payTime,channel_type_id channelTypeId,order_status orderStatus,notify_status
+        notifyStatus,pay_url payUrl,remark,pay_url_count payUrlCount,
+        client_info clientInfo,notify_url notifyUrl,product_name productName,create_time createTime,xnprofit profit,
+        client_channel_id clientChannelId,merchant_channel_id merchantChannelId
+        ,merchant_no merchantNo,client_no clientNo,tname,proxy_id proxyId,proxy_no proxyNo
+        ,order_type orderType, platform platform
+        from pay_order
+        <where>
+            <if test="id !=null">
+                and id=#{id}
+            </if>
+            <if test="sn !=null and sn !=''">
+                and sn=#{sn}
+            </if>
+            <if test="merchantSn !=null and merchantSn !=''">
+                and merchant_sn=#{merchantSn}
+            </if>
+            <if test="clientSn !=null and clientSn !=''">
+                and client_sn=#{clientSn}
+            </if>
+        </where>
+        limit 1
+    </select>
+
+    <select id="querySingle1" parameterType="Map" resultType="com.city.city_collector.admin.pay.entity.PayOrder">
+        select id,sn,client_id clientId,client_sn clientSn,merchant_id merchantId,merchant_sn merchantSn,
+        money,amount,pay_time payTime,channel_type_id channelTypeId,order_status orderStatus,notify_status
+        notifyStatus,pay_url payUrl,
+        notify_url notifyUrl,product_name productName,create_time createTime,xnprofit profit,
+        client_channel_id clientChannelId,merchant_channel_id merchantChannelId
+        ,merchant_no merchantNo,client_no clientNo,tname,proxy_id proxyId,proxy_no proxyNo
+        ,order_type orderType, platform platform
+        from pay_order
+        <where>
+            <if test="id !=null">
+                and id=#{id}
+            </if>
+            <if test="sn !=null and sn !=''">
+                and sn=#{sn}
+            </if>
+            <if test="merchantSn !=null and merchantSn !=''">
+                and merchant_sn=#{merchantSn}
+            </if>
+            <if test="clientSn !=null and clientSn !=''">
+                and client_sn=#{clientSn}
+            </if>
+        </where>
+        limit 1
+    </select>
+
+    <update id="updateOrderPayStatus" parameterType="com.city.city_collector.admin.pay.entity.PayOrder">
+        update pay_order
+        set money=#{money},amount=#{amount},pay_time=#{payTime},order_status=#{orderStatus}
+        <if test="clientSn !=null and clientSn !=''">
+            ,client_sn=#{clientSn}
+        </if>
+        where id=#{id}
+    </update>
+
+    <update id="updateOrderStatus" parameterType="com.city.city_collector.admin.pay.entity.PayOrder">
+        update pay_order
+        set order_status=#{orderStatus},pay_url_count=#{payUrlCount}
+        where id=#{id}
+    </update>
+
+    <update id="updateOrderPlat" parameterType="com.city.city_collector.admin.pay.entity.PayOrder">
+        update pay_order
+        set platform=#{platform}
+        where id=#{id}
+    </update>
+
+    <update id="updateOrderSuccess" parameterType="com.city.city_collector.admin.pay.entity.PayOrder">
+        update pay_order
+        set client_info=#{clientInfo},
+        client_id=#{clientId},
+        client_no=#{clientNo},
+        client_channel_id=#{clientChannelId},
+        client_info=#{clientInfo},
+        client_sn=#{clientSn},
+        merchant_channel_id=#{merchantChannelId},
+        order_status=#{orderStatus},
+        pay_url=#{payUrl},
+        pay_url_count=#{payUrlCount},
+        client_ratio=#{clientRatio},
+        merchant_ratio=#{merchantRatio},
+        proxy_ratio=#{proxyRatio}
+        where id=#{id}
+    </update>
+
+    <update id="updateOrderMendStatus" parameterType="com.city.city_collector.admin.pay.entity.PayOrder">
+        update pay_order
+        set pay_time=#{payTime},order_status=#{orderStatus},mend=#{mend}
+        where id=#{id}
+    </update>
+
+    <!--编辑数据-->
+    <update id="editSave" parameterType="com.city.city_collector.admin.pay.entity.PayOrder">
+        update pay_order
+        <set>
+            <!--
+                <if test="paramgroup_id !=null and paramgroup_id !=''">
+                      paramgroup_id=#{paramgroup_id},
+                  </if>
+                -->
+
+        </set>
+        where id=#{id}
+    </update>
+
+    <!--删除数据-->
+    <delete id="delete" parameterType="java.lang.String">
+        delete from pay_order where id in (${_parameter})
+    </delete>
+
+    <!-- 查询已成功且通知状态为未通知的订单 -->
+    <select id="querySuccessOrder" parameterType="Map" resultType="com.city.city_collector.admin.pay.entity.PayOrder">
+        select po.id id,po.sn sn,po.client_id clientId,po.client_sn clientSn,po.merchant_id merchantId,po.merchant_sn
+        merchantSn,
+        po.money money,po.amount amount,po.pay_time payTime,po.channel_type_id channelTypeId,po.order_status
+        orderStatus,
+        po.notify_status notifyStatus,po.pay_url payUrl,po.remark remark,
+        po.notify_url notifyUrl,pmc.merchant_ratio merchantRatio,pmc.proxy_ratio proxyRatio,pcc.ratio
+        clientRatio,po.create_time createTime, po.platform platform
+        from pay_order po
+        inner join pay_merchant_channel pmc on po.merchant_channel_id=pmc.id
+        inner join pay_client_channel pcc on po.client_channel_id=pcc.id
+        where po.notify_status=0 and po.order_status=1
+    </select>
+
+    <!-- 查询已成功且通知状态为未通知的订单ID -->
+    <select id="querySuccessOrderIdsNew" parameterType="Map" resultType="Long">
+        select id
+        from pay_order
+        where notify_status=0 and order_status=1
+
+    </select>
+
+    <select id="querySuccessOrderListNew" parameterType="Map"
+            resultType="com.city.city_collector.admin.pay.entity.PayOrder">
+        select po.id id,po.sn sn,po.client_id clientId,po.client_sn clientSn,po.merchant_id merchantId,po.merchant_sn
+        merchantSn,
+        po.money money,po.amount amount,po.pay_time payTime,po.channel_type_id channelTypeId,po.order_status
+        orderStatus,
+        po.notify_status notifyStatus,po.pay_url payUrl,po.remark remark,
+        po.notify_url notifyUrl,pmc.merchant_ratio merchantRatio,pmc.proxy_ratio proxyRatio,pcc.ratio
+        clientRatio,po.create_time createTime,po.platform platform
+        from pay_order po
+        inner join pay_merchant_channel pmc on po.merchant_channel_id=pmc.id
+        inner join pay_client_channel pcc on po.client_channel_id=pcc.id
+        where po.id in (${ids})
+    </select>
+
+    <!-- 更新支付成功的订单信息 -->
+    <update id="dealSuccessOrder" parameterType="com.city.city_collector.admin.pay.entity.PayOrder">
+        update pay_order
+        set profit=#{profit},xnprofit=#{xnprofit},notify_status=#{notifyStatus}
+        <if test="proxyId !=null and proxyId !=''">
+            ,proxy_id=#{proxyId}
+        </if>
+        <if test="proxyNo !=null and proxyNo !=''">
+            ,proxy_no=#{proxyNo}
+        </if>
+        where id=#{id}
+    </update>
+
+    <select id="queryNeedNotifyOrder" parameterType="Map"
+            resultType="com.city.city_collector.admin.pay.entity.PayOrder">
+        select po.id id,po.sn sn,po.client_id clientId,po.client_sn clientSn,po.merchant_id merchantId,po.merchant_sn
+        merchantSn,
+        po.money money,po.amount amount,po.pay_time payTime,po.channel_type_id channelTypeId,po.order_status
+        orderStatus,
+        po.notify_status notifyStatus,po.pay_url payUrl,po.notify_url notifyUrl,po.notify_count
+        notifyCount,po.deal_status dealStatus,
+        po.create_time createTime,po.remark remark
+        from pay_order po
+        where
+        <![CDATA[
+				id>(select min(id) from pay_order where CREATE_TIME>#{startTime} ) and
+				order_status=1 and (deal_status is null or deal_status=0)
+				and (notify_count is null or notify_count<3)
+				and (notify_time is null or TIMESTAMPDIFF(SECOND,notify_time,SYSDATE())>notify_count*20 )
+			]]>
+    </select>
+
+    <update id="updateNotifyOrder" parameterType="com.city.city_collector.admin.pay.entity.PayOrder">
+        update pay_order
+        set notify_count=#{notifyCount},notify_time=SYSDATE(),deal_status=#{dealStatus}
+        where id=#{id}
+    </update>
+
+    <!-- 查询订单详情 - 未支付 -->
+    <select id="queryOrderDetailNoPay" parameterType="Map" resultType="Map">
+        select po.sn sn,client.username clientNo,client.`name` clientName,pcc.`name` ccname,pcc.ratio
+        clientRatio,po.client_sn clientSn,
+        merchant.`name` merchantName,merchant.username merchantNo,pmc.merchant_ratio merchantRatio,po.merchant_sn
+        merchantSn,
+        pmc.proxy_ratio proxyRatio,proxy.username proxyNo,proxy.`name` proxyName,
+        po.money money,po.amount amount,DATE_FORMAT(po.pay_time,'%Y-%m-%d %H:%i:%S') payTime,
+        DATE_FORMAT(po.create_time,'%Y-%m-%d %H:%i:%S') createTime,pct.`name` typeName,po.order_status
+        orderStatus,po.notify_status notifyStatus,
+        po.notify_url notifyUrl,po.pay_url payUrl,po.remark remark,po.client_info clientInfo,po.deal_status dealStatus,
+        po.notify_count notifyCount,po.notify_time notifyTime,FORMAT((case when proxy.id is null then 0 else
+        pmc.proxy_ratio end)*po.money/100,2) proxyComission,
+        FORMAT(pcc.ratio*po.money/100,2) clientComission,FORMAT(pmc.merchant_ratio*po.money/100,2)
+        merchantComission,FORMAT((100-pcc.ratio)*po.money/100,2) clientMoney,
+        FORMAT((100-pmc.merchant_ratio)*po.money/100,2) merchantMoney,FORMAT((pmc.merchant_ratio-pcc.ratio-(case when
+        proxy.id is null then 0 else pmc.proxy_ratio end))*po.money/100,2) profit
+
+        from pay_order po
+        inner join pay_client_channel pcc on po.client_channel_id=pcc.id
+        inner join sys_user client on po.client_id=client.id
+        inner join sys_user merchant on po.merchant_id=merchant.id
+        inner join pay_merchant_channel pmc on po.merchant_channel_id=pmc.id
+        inner join pay_channel_type pct on po.channel_type_id=pct.ID
+        left join sys_user proxy on proxy.id=merchant.proxy_id
+
+        <where>
+            <if test="id !=null and id !=''">
+                and po.id=#{id}
+            </if>
+            <if test="sn !=null and sn !=''">
+                and sn=#{sn}
+            </if>
+            <if test="merchantSn !=null and merchantSn !=''">
+                and merchant_sn=#{merchantSn}
+            </if>
+        </where>
+        limit 1
+    </select>
+
+    <select id="queryOrderDetailSuccess" parameterType="Map" resultType="Map">
+        select po.sn sn,po.client_sn clientSn,po.merchant_sn merchantSn,client.username clientNo,client.`name`
+        clientName,
+        merchant.`name` merchantName,merchant.username merchantNo,
+        proxy.username proxyNo,proxy.`name` proxyName,
+        po.money money,po.amount amount,DATE_FORMAT(po.pay_time,'%Y-%m-%d %H:%i:%S') payTime,
+        DATE_FORMAT(po.create_time,'%Y-%m-%d %H:%i:%S') createTime,pct.`name` typeName,po.order_status
+        orderStatus,po.notify_status notifyStatus,
+        po.notify_url notifyUrl,po.pay_url payUrl,po.remark remark,po.client_info clientInfo,po.deal_status dealStatus,
+        po.notify_count notifyCount,po.notify_time notifyTime,po.xnprofit profit,
+        pmr.ratio merchantRatio,pmr.money merchantMoney,pmr.commission merchantComission,
+        pcb.ratio clientRatio,pcb.money clientMoney,pcb.commission clientComission,
+        IFNULL(ppr.ratio,0) proxyRatio,IFNULL(ppr.commission,0) proxyComission
+        from pay_order po
+        inner join sys_user client on po.client_id=client.id
+        inner join sys_user merchant on po.merchant_id=merchant.id
+        left join sys_user proxy on proxy.id=merchant.proxy_id
+        inner join pay_channel_type pct on po.channel_type_id=pct.ID
+        left join pay_memchant_record pmr on pmr.order_sn=po.sn
+        left join pay_client_balance pcb on pcb.order_sn=po.sn
+        left join pay_proxy_record ppr on ppr.order_sn=po.sn
+        <where>
+            <if test="id !=null and id !=''">
+                and po.id=#{id}
+            </if>
+            <if test="sn !=null and sn !=''">
+                and sn=#{sn}
+            </if>
+            <if test="merchantSn !=null and merchantSn !=''">
+                and merchant_sn=#{merchantSn}
+            </if>
+        </where>
+        limit 1
+    </select>
+
+    <!-- 补单 -->
+    <update id="mendOrderStatus" parameterType="com.city.city_collector.admin.pay.entity.PayOrder">
+        update pay_order
+        set mend=1,order_status=1,notify_status=1,deal_status=0,notify_count=5,pay_time=SYSDATE(),notify_time=SYSDATE()
+        where id=#{id}
+    </update>
+
+    <select id="queryMendOrder" parameterType="Map" resultType="com.city.city_collector.admin.pay.entity.PayOrder">
+        select po.id id,po.sn sn,po.client_id clientId,po.client_sn clientSn,po.merchant_id merchantId,po.merchant_sn
+        merchantSn,
+        po.money money,po.amount amount,po.pay_time payTime,po.channel_type_id channelTypeId,po.order_status
+        orderStatus,
+        po.notify_status notifyStatus,po.pay_url payUrl,
+        po.notify_url notifyUrl,pmc.merchant_ratio merchantRatio,pmc.proxy_ratio proxyRatio,pcc.ratio
+        clientRatio,po.create_time createTime
+        from pay_order po
+        inner join pay_merchant_channel pmc on po.merchant_channel_id=pmc.id
+        inner join pay_client_channel pcc on po.client_channel_id=pcc.id
+        where po.id=#{id}
+    </select>
+
+    <select id="queryOrderInfo" parameterType="Map" resultType="com.city.city_collector.admin.pay.entity.PayOrder">
+        select id,sn,client_id clientId,client_sn clientSn,merchant_id merchantId,merchant_sn merchantSn,
+        money,amount,pay_time payTime,channel_type_id channelTypeId,order_status orderStatus,deal_status
+        notifyStatus,pay_url payUrl,remark,
+        client_info clientInfo,notify_url notifyUrl,product_name productName,create_time createTime,xnprofit profit,
+        client_channel_id clientChannelId,merchant_channel_id merchantChannelId
+        from pay_order
+        where order_status in (-2,-1,0,1)
+        <if test="id !=null">
+            and id=#{id}
+        </if>
+        <if test="sn !=null and sn !=''">
+            and sn=#{sn}
+        </if>
+        <if test="merchantSn !=null and merchantSn !=''">
+            and merchant_sn=#{merchantSn}
+        </if>
+
+        limit 1
+    </select>
+
+    <!-- 查询导出数据-管理员 -->
+    <select id="queryExportList" parameterType="Map" resultType="Map">
+        select po.sn sn,po.client_sn clientSn,po.money money,po.client_no clientNo,
+        po.tname typeName,
+        DATE_FORMAT(po.CREATE_TIME,'%Y-%m-%d %T') createTime,DATE_FORMAT(po.pay_time,'%Y-%m-%d %T') payTime
+        ,case when po.order_status=1 then '已支付' else '待支付' end orderStatus
+        ,po.merchant_no merchantNo,po.merchant_sn merchantSn,po.client_ratio clientRatio, po.merchant_ratio merchantRatio, po.proxy_ratio proxyRatio, po.platform platform, b.name client_channel_no, c.name merchant_name
+        from pay_order po left join pay_client_channel as b on po.client_channel_id = b.ID left join sys_user as c on po.merchant_no = c.username
+        <where>
+            <if test="typeId !=null and typeId !=''">
+                and po.channel_type_id=#{typeId}
+            </if>
+
+            <if test="clientId !=null and clientId !=''">
+                and po.client_id=#{clientId}
+            </if>
+
+            <if test="clientSn !=null and clientSn !=''">
+                and po.client_sn=#{clientSn}
+            </if>
+
+            <if test="orderStatus !=null and orderStatus !=''">
+                and po.order_status=#{orderStatus}
+            </if>
+
+            <if test="proxyId !=null and proxyId !=''">
+                and po.proxy_id=#{proxyId}
+            </if>
+
+            <if test="mend_status !=null and mend_status !='' and mend_status !=0">
+                and po.mend=#{mend_status}
+            </if>
+
+            <if test="sn !=null and sn !=''">
+                and po.sn=#{sn}
+            </if>
+            <if test="amountEq !=null and amountEq !=''">
+                and po.money=#{amountEq}
+            </if>
+            <if test="merchantId !=null and merchantId !=''">
+                and po.merchant_id=#{merchantId}
+            </if>
+
+            <if test="merchantSn !=null and merchantSn !=''">
+                and po.merchant_sn=#{merchantSn}
+            </if>
+
+            <if test="startTime !=null and startTime !=''">
+                and po.CREATE_TIME <![CDATA[  >=  ]]> #{startTime}
+            </if>
+
+            <if test="endTime !=null and endTime !=''">
+                and po.CREATE_TIME <![CDATA[  <  ]]>#{endTime}
+            </if>
+
+            <if test="client_channel_id !=null and client_channel_id !=''">
+                and client_channel_id=#{client_channel_id}
+            </if>
+
+            <if test="paystartTime !=null and paystartTime !=''">
+                and pay_time <![CDATA[  >=  ]]> #{paystartTime}
+            </if>
+
+            <if test="payendTime !=null and payendTime !=''">
+                and pay_time <![CDATA[  <  ]]>#{payendTime}
+            </if>
+
+        </where>
+        <if test="orderby !=null and orderby !=''">
+            order by ${orderby}
+        </if>
+        <if test="orderby ==null">
+            order by po.CREATE_TIME desc
+        </if>
+    </select>
+
+    <!-- 查询导出数据-商户 -->
+    <select id="queryExportListMerchant" parameterType="Map" resultType="Map">
+        select po.sn sn,po.merchant_sn merchantSn,po.money money,po.merchant_no merchantNo,
+        po.tname typeName,
+        DATE_FORMAT(po.CREATE_TIME,'%Y-%m-%d %T') createTime,DATE_FORMAT(po.pay_time,'%Y-%m-%d %T') payTime
+        ,case when po.order_status=1 then '已支付' else '待支付' end orderStatus
+        ,case when pmr.ratio is not null then concat(pmr.ratio,'%') else '' end ratio,pmr.commission
+        commission,pmr.money realMoney
+        from pay_order po
+        left join pay_memchant_record pmr on pmr.order_sn=po.sn
+        <where>
+            <if test="typeId !=null and typeId !=''">
+                and po.channel_type_id=#{typeId}
+            </if>
+
+            <if test="clientId !=null and clientId !=''">
+                and po.client_id=#{clientId}
+            </if>
+
+            <if test="clientSn !=null and clientSn !=''">
+                and po.client_sn=#{clientSn}
+            </if>
+
+            <if test="orderStatus !=null and orderStatus !=''">
+                and po.order_status=#{orderStatus}
+            </if>
+
+            <if test="proxyId !=null and proxyId !=''">
+                and po.proxy_id=#{proxyId}
+            </if>
+
+            <if test="sn !=null and sn !=''">
+                and po.sn=#{sn}
+            </if>
+            <if test="amountEq !=null and amountEq !=''">
+                and po.money=#{amountEq}
+            </if>
+
+            <if test="merchantId !=null and merchantId !=''">
+                and po.merchant_id=#{merchantId}
+            </if>
+
+            <if test="merchantSn !=null and merchantSn !=''">
+                and po.merchant_sn=#{merchantSn}
+            </if>
+
+            <if test="startTime !=null and startTime !=''">
+                and po.CREATE_TIME <![CDATA[  >=  ]]> #{startTime}
+            </if>
+
+            <if test="endTime !=null and endTime !=''">
+                and po.CREATE_TIME <![CDATA[  <  ]]>#{endTime}
+            </if>
+
+            <if test="merchantIds !=null and merchantIds !=''">
+                and po.merchant_id in (${merchantIds})
+            </if>
+
+        </where>
+        <if test="orderby !=null and orderby !=''">
+            order by ${orderby}
+        </if>
+        <if test="orderby ==null">
+            order by po.CREATE_TIME desc
+        </if>
+    </select>
+
+    <!-- 订单统计数据 -->
+    <select id="queryTotalAdmin" parameterType="Map" resultType="Map">
+        select sum(po.money) money,sum(case when po.order_status=1 then po.money else 0 end) sucMoney,
+        count(*) as all_count,
+        sum( CASE WHEN po.order_status = 1 THEN 1 ELSE 0 END ) suc_count
+        from pay_order po
+        where xnorder=0
+        <if test="typeId !=null and typeId !=''">
+            and po.channel_type_id=#{typeId}
+        </if>
+
+        <if test="clientId !=null and clientId !=''">
+            and po.client_id=#{clientId}
+        </if>
+
+        <if test="clientSn !=null and clientSn !=''">
+            and po.client_sn=#{clientSn}
+        </if>
+
+        <if test="orderStatus !=null and orderStatus !=''">
+            and po.order_status=#{orderStatus}
+        </if>
+
+        <if test="proxyId !=null and proxyId !=''">
+            and po.proxy_id=#{proxyId}
+        </if>
+
+        <if test="sn !=null and sn !=''">
+            and po.sn=#{sn}
+        </if>
+        <if test="amountEq !=null and amountEq !=''">
+            and po.money=#{amountEq}
+        </if>
+        <if test="merchantId !=null and merchantId !=''">
+            and po.merchant_id=#{merchantId}
+        </if>
+
+        <if test="merchantSn !=null and merchantSn !=''">
+            and po.merchant_sn=#{merchantSn}
+        </if>
+
+        <if test="startTime !=null and startTime !=''">
+            and po.CREATE_TIME <![CDATA[  >=  ]]> #{startTime}
+        </if>
+
+        <if test="endTime !=null and endTime !=''">
+            and po.CREATE_TIME <![CDATA[  <  ]]>#{endTime}
+        </if>
+
+        <if test="client_channel_id !=null and client_channel_id !=''">
+            and client_channel_id=#{client_channel_id}
+        </if>
+
+        <if test="paystartTime !=null and paystartTime !=''">
+            and pay_time <![CDATA[  >=  ]]> #{paystartTime}
+        </if>
+
+        <if test="payendTime !=null and payendTime !=''">
+            and pay_time <![CDATA[  <  ]]>#{payendTime}
+        </if>
+
+    </select>
+
+    <select id="queryTotalMerchant" parameterType="Map" resultType="Map">
+        select sum(case when po.order_status=1 then po.money else 0 end) sucMoney,sum(pmr.commission)
+        commission,sum(pmr.money) realMoney
+        from pay_order po
+        left join pay_memchant_record pmr on pmr.order_sn=po.sn and pmr.type=2
+        <where>
+            <if test="typeId !=null and typeId !=''">
+                and po.channel_type_id=#{typeId}
+            </if>
+
+            <if test="clientId !=null and clientId !=''">
+                and po.client_id=#{clientId}
+            </if>
+
+            <if test="clientSn !=null and clientSn !=''">
+                and po.client_sn like "%"#{clientSn}"%"
+            </if>
+
+            <if test="orderStatus !=null and orderStatus !=''">
+                and po.order_status=#{orderStatus}
+            </if>
+            <if test="amountEq !=null and amountEq !=''">
+                and po.money=#{amountEq}
+            </if>
+            <if test="proxyId !=null and proxyId !=''">
+                and su.proxy_id=#{proxyId}
+            </if>
+
+            <if test="sn !=null and sn !=''">
+                and po.sn like "%"#{sn}"%"
+            </if>
+
+            <if test="merchantId !=null and merchantId !=''">
+                and po.merchant_id=#{merchantId}
+            </if>
+
+            <if test="merchantSn !=null and merchantSn !=''">
+                and po.merchant_sn like "%"#{merchantSn}"%"
+            </if>
+
+            <if test="startTime !=null and startTime !=''">
+                and po.CREATE_TIME <![CDATA[  >=  ]]> #{startTime}
+            </if>
+
+            <if test="endTime !=null and endTime !=''">
+                and po.CREATE_TIME <![CDATA[  <  ]]>#{endTime}
+            </if>
+
+            <if test="merchantIds !=null and merchantIds !=''">
+                and po.merchant_id in (${merchantIds})
+            </if>
+        </where>
+
+    </select>
+
+    <!-- 查询支持查单的上游模块 -->
+    <select id="queryClientModelList" parameterType="Map" resultType="Map">
+        select DISTINCT su.id clientId,su.username clientUserName,su.`name` clientName,pcc.keyname keyname
+        from sys_user su
+        inner join pay_client_channel pcc on su.ID=pcc.client_id
+        inner join pay_client_model pcm on pcc.keyname=pcm.keyname
+        where su.`type`=3 and pcc.keyname is not null and pcm.cd_status=1
+    </select>
+
+    <!-- 查询所有需要查单的订单 -->
+    <select id="queryNeedQueryOrdersList" parameterType="Map"
+            resultType="com.city.city_collector.admin.pay.entity.PayOrder">
+        select id,sn,client_id clientId,client_sn clientSn,merchant_id merchantId,merchant_sn merchantSn,
+        money,amount,pay_time payTime,channel_type_id channelTypeId,
+        notify_url notifyUrl,create_time createTime,xnprofit profit,
+        client_channel_id clientChannelId,merchant_channel_id merchantChannelId
+        ,merchant_no merchantNo,client_no clientNo,tname,proxy_id proxyId,proxy_no proxyNo
+        ,order_type orderType
+        from pay_order
+        where client_id=#{clientId} and order_status=0
+        and CREATE_TIME <![CDATA[  >=  ]]> #{startTime}
+        and CREATE_TIME <![CDATA[  <  ]]> #{endTime}
+    </select>
+
+    <!-- 重新回调 -->
+    <update id="batchNotifyMerchant" parameterType="Map">
+        update pay_order set notify_count=1,deal_status =0
+        where notify_status=1 and order_status=1
+        and CREATE_TIME <![CDATA[  >=  ]]> #{startTime}
+        and CREATE_TIME <![CDATA[  <  ]]> #{endTime}
+        <if test="merchantId !=null and merchantId !=''">
+            and merchant_id=#{merchantId}
+        </if>
+    </update>
+
+    <!-- 最新的订单处理程序 -->
+    <update id="updateOrderInfoByProcedure" parameterType="Map" statementType="CALLABLE">
+        <![CDATA[
+    		{call payOrderSuccess(#{orderId,mode=IN},#{merchantId,mode=IN},#{proxyId,mode=IN},#{clientId,mode=IN},
+								#{orderMoney,mode=IN},#{orderSn,mode=IN},
+								#{merchantMoney,mode=IN},#{merchantRatio,mode=IN},#{merchantCommission,mode=IN},
+								#{proxyMoney,mode=IN},#{proxyRatio,mode=IN},#{proxyCommission,mode=IN},
+								#{clientMoney,mode=IN},#{clientRatio,mode=IN},#{clientCommission,mode=IN},
+								#{profit,mode=IN},#{xnprofit,mode=IN},#{otherId,mode=IN},#{otherMoney,mode=IN},
+								#{pmrSn,mode=IN},#{pprSn,mode=IN},#{pcbSn,mode=IN})}
+		]]>
+    </update>
+
+    <select id="selectInComeOrderStatistics" resultType="com.city.city_collector.admin.pay.entity.PayInComeOrder">
+        SELECT sys_user.username merchantName , pay_client_channel.`name` channelName ,incomeOrder.* from (
+        SELECT merchant_id merchantId, client_channel_id clientChannelId , amount,COUNT(amount) count from pay_order
+        WHERE CREATE_TIME <![CDATA[ >= ]]>  #{begin} AND CREATE_TIME <![CDATA[ <= ]]> #{end} and order_status != -1 and order_status != -2
+        <if test="  null!=merId and merId!='' ">
+            and merchant_id =#{merId}
+        </if>
+        <if test=" null!=channelId and channelId!='' ">
+            and client_channel_id =#{channelId}
+        </if>
+        <if test="  null!=amount  ">
+            and amount =#{amount}
+        </if>
+        GROUP BY merchant_id,client_channel_id,amount ) incomeOrder
+        LEFT JOIN pay_client_channel ON incomeOrder.clientChannelId = pay_client_channel.ID
+        LEFT JOIN sys_user ON incomeOrder.merchantId = sys_user.ID order by
+        incomeOrder.clientChannelId,incomeOrder.amount
+    </select>
+
+    <select id="inComeOrderRateStatistics" resultType="com.city.city_collector.admin.pay.entity.PayRateStatistics">
+        SELECT sys_user.username merchantName ,sys_user.name merchantNickname, pay_client_channel.`name` channelName,incomeOrder.* from (
+        SELECT amount,count(amount) count,merchant_id merchantId,client_channel_id clientChannelId,order_status orderStatus,merchant_channel_id,tname FROM pay_order
+        WHERE CREATE_TIME <![CDATA[ >= ]]>  #{begin} AND CREATE_TIME <![CDATA[ <= ]]> #{end} and order_status != -1 and order_status != -2
+        <if test="  null!=merId and merId!='' ">
+            and merchant_id =#{merId}
+        </if>
+        <if test=" null!=channelId and channelId!='' ">
+            and client_channel_id =#{channelId}
+        </if>
+        <if test=" null!=tname and tname!='' ">
+            and tname =#{tname}
+        </if>
+   
+        <if test="  null!=amount  ">
+            and amount =#{amount}
+        </if>
+        GROUP BY merchant_id,client_channel_id, amount,order_status ) incomeOrder
+        LEFT JOIN pay_client_channel ON incomeOrder.clientChannelId = pay_client_channel.ID
+        <if test=" null!=cname and cname!='' ">
+             and pay_client_channel.`name`=#{cname}
+        </if>  
+
+        LEFT JOIN sys_user ON incomeOrder.merchantId = sys_user.ID order by
+        incomeOrder.clientChannelId,incomeOrder.amount
+    </select>
+
+    <select id="queryStatistics" resultType="Map">
+        SELECT SUM(amount) amount,count(order_status) count,order_status orderStatus FROM pay_order WHERE
+        CREATE_TIME  <![CDATA[ >= ]]> #{begin} and CREATE_TIME <![CDATA[ <= ]]> #{end} and order_status != -1 and order_status != -2 GROUP BY order_status
+    </select>
+
+</mapper>

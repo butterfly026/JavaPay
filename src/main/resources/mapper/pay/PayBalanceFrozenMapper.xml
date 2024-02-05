@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd"
+        >
+<mapper namespace="com.city.city_collector.admin.pay.dao.PayBalanceFrozenDao">
+    <!--查询分页数据-->
+    <select id="queryPage" parameterType="Map" resultType="Map">
+        select pbf.id id,pbf.type type,pbf.user_id userId,su.username userNo,su.`name` userName,pbf.money money,
+        pbf.frozen_type frozenType,pbf.`status` `status`,pbf.remark remark,pbf.jd_time jdTime
+        from pay_balance_frozen pbf
+        inner join sys_user su on su.id=pbf.user_id
+        <where>
+            <if test="merchantId !=null and merchantId !=''">
+                and su.id=#{merchantId} and su.type=2
+            </if>
+
+            <if test="proxyId !=null and proxyId !=''">
+                and su.id=#{proxyId} and su.type=1
+            </if>
+
+            <if test="frozenType !=null and frozenType !=''">
+                and pbf.frozen_type=#{frozenType}
+            </if>
+
+        </where>
+
+        <if test="orderby !=null and orderby !=''">
+            order by ${orderby}
+        </if>
+        <if test="orderby ==null">
+            order by pbf.CREATE_TIME desc
+        </if>
+        limit #{start},#{end}
+    </select>
+    <!--查询总体记录数-->
+    <select id="queryCount" parameterType="Map" resultType="int">
+        SELECT count(1) count
+        from pay_balance_frozen pbf
+        inner join sys_user su on su.id=pbf.user_id
+        <where>
+
+            <if test="merchantId !=null and merchantId !=''">
+                and su.id=#{merchantId} and su.type=2
+            </if>
+
+            <if test="proxyId !=null and proxyId !=''">
+                and su.id=#{proxyId} and su.type=1
+            </if>
+
+            <if test="frozenType !=null and frozenType !=''">
+                and pbf.frozen_type=#{frozenType}
+            </if>
+
+        </where>
+    </select>
+    <!--添加记录-->
+    <insert id="addSave" parameterType="com.city.city_collector.admin.pay.entity.PayBalanceFrozen"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into pay_balance_frozen(type,user_id,money,frozen_type,remark,`status`,jd_time)
+        value(#{type},#{userId},#{money},#{frozenType},#{remark},#{status},#{jdTime})
+    </insert>
+    <!--查询单条记录-->
+    <select id="querySingle" parameterType="Map" resultType="com.city.city_collector.admin.pay.entity.PayBalanceFrozen">
+        select pbf.id id,pbf.type type,pbf.user_id userId,su.username userNo,su.`name` userName,pbf.money
+        money,pbf.frozen_type frozenType,pbf.`status` `status`,pbf.remark remark,pbf.jd_time jdTime
+        from pay_balance_frozen pbf
+        inner join sys_user su on su.id=pbf.user_id
+        where pbf.id=#{id}
+    </select>
+    <!--编辑数据-->
+    <update id="editSave" parameterType="com.city.city_collector.admin.pay.entity.PayBalanceFrozen">
+        update pay_balance_frozen
+        set status=#{status}
+        where id=#{id}
+    </update>
+
+    <!--删除数据-->
+    <delete id="delete" parameterType="java.lang.String">
+        delete from pay_balance_frozen where id in (${_parameter})
+    </delete>
+
+    <update id="updateStatus" parameterType="Map">
+        update pay_client_channel
+        set status=#{status},jd_time=SYSDATE()
+        where id=#{id}
+    </update>
+</mapper>

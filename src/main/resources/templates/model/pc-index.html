@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <@includeNew path="/model/common/pc-header.html" encoding="UTF-8">
+</
+@includeNew>
+
+</head>
+<body>
+<div class="container">
+
+    <@includeNew path="/model/common/pc-column.html" encoding="UTF-8">
+</
+@includeNew>
+
+<@includeNew path="/model/common/pc-adheader.html" encoding="UTF-8">
+</
+@includeNew>
+
+<div class="navnew ntitle">
+    站长推荐
+</div>
+
+<div class="row ysbox1" id="videoList">
+
+    <#if fList?exists>
+    <#list fList as v>
+    <a href="${context}/video/video_${v.id}.html" target="_blank">
+        <div class="col-sm-3 col-xs-6 ysbox2">
+            <div class="imgbox1">
+                <div>
+                    <img src="${context}/bootstrap/image/zwt.png" data-original="${v.vpic}" class="img1"/>
+                </div>
+            </div>
+            <div class="zytxt">${v.vname}</div>
+        </div>
+    </a>
+</
+#list>
+</#if>
+
+</div>
+
+<div class="navnew ntitle">
+    最新视频
+</div>
+
+<div class="row ysbox1" id="videoList">
+
+    <#if vList?exists>
+    <#list vList as v>
+    <a href="${context}/video/video_${v.id}.html" target="_blank">
+        <div class="col-sm-3 col-xs-6 ysbox2">
+            <div class="imgbox1">
+                <div>
+                    <img src="${context}/bootstrap/image/zwt.png" data-original="${v.vpic}" class="img1"/>
+                </div>
+            </div>
+            <div class="zytxt">${v.vname}</div>
+        </div>
+    </a>
+</#list>
+</#if>
+
+</div>
+
+<div id="btbanner-list"></div>
+
+<@includeNew path="/model/common/pc-footer.html" encoding="UTF-8"> </@includeNew>
+
+</div>
+
+<@includeNew path="/model/common/mb-xfadv.html" encoding="UTF-8"> </@includeNew>
+
+<script>
+
+    $(function () {
+
+
+        //load banner
+
+        $(".img1").lazyload({
+            effect: "show"
+            , load: function () {
+                var tw = $(this).width();
+                var tpw = $(this).parent().width();
+                var th = $(this).height();
+                var tph = $(this).parent().height();
+                if (tw < tpw && th < tph) {
+                    if (tpw / tw > tph / th) {
+                        $(this).css("height", "100%");
+                    } else {
+                        $(this).css("width", "100%");
+                    }
+                }
+            }
+        });
+
+    <@includeNew
+        path = "/model/common/pc-adjs.html"
+        encoding = "UTF-8" > < /@includeNew>
+
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd"
+        >
+<mapper namespace="com.city.city_collector.admin.pay.dao.PayCashDao">
+    <!--查询分页数据-->
+    <select id="queryPage" parameterType="Map" resultType="Map">
+        select pc.id id,CONCAT(su.username,case when pc.user_type=0 then
+        <![CDATA[ '<span style="color:blue">[商户]</span>']]> when pc.user_type=1 then
+        <![CDATA[ '<span style="color:green">[代理]</span>' ]]> end) merchantNo,
+        su1.username proxyNo,sn,merchant_sn merchantSn,cash_type cashType,amount,commission,bank_accno bankAccno,
+        bank_accname bankAccname,bank_name bankName,pc.CREATE_TIME createTime,pc.pay_time payTime,pc.pay_status
+        payStatus,notify_status notifyStatus,
+        su2.username clientNo,pc.real_money realMoney,pc.bank_code bankCode,pc.client_sn clientSn,client_money
+        clientMoney,client_commission clientCommission,client_real_money clientRealMoney
+        ,pc.remark remark,pc.deal_status dealStatus,apiremark,pc.bank_subname bankSubname,pc.bank_province
+        bankProvince,pc.bank_city bankCity
+        ,bank_ifsc bankIfsc,bank_nation bankNation,btype,proxy_money proxyMoney,user_type userType,pc.channel_type
+        channelType
+        from pay_cash pc
+        inner join sys_user su on pc.merchant_id=su.id
+        left join sys_user su1 on pc.proxy_id=su1.id
+        left join sys_user su2 on pc.client_id=su2.id
+        <where>
+
+            <if test="merchantNo !=null and merchantNo !=''">
+                and su.username like "%"#{merchantNo}"%"
+            </if>
+
+            <if test="sn !=null and sn !=''">
+                and pc.sn like "%"#{sn}"%"
+            </if>
+
+            <if test="merchantSn !=null and merchantSn !=''">
+                and pc.merchant_sn like "%"#{merchantSn}"%"
+            </if>
+
+            <if test="bankAccname !=null and bankAccname !=''">
+                and pc.bank_accname like "%"#{bankAccname}"%"
+            </if>
+
+            <if test="startTime !=null and startTime !=''">
+                and pc.CREATE_TIME <![CDATA[  >=  ]]> #{startTime}
+            </if>
+
+            <if test="endTime !=null and endTime !=''">
+                and pc.CREATE_TIME <![CDATA[  <  ]]>#{endTime}
+            </if>
+
+            <if test="payStartTime !=null and payStartTime !=''">
+                and pc.pay_time <![CDATA[  >=  ]]> #{payStartTime}
+            </if>
+
+            <if test="payEndTime !=null and payEndTime !=''">
+                and pc.pay_time <![CDATA[  <  ]]>#{payEndTime}
+            </if>
+
+            <if test="payStatus !=null and payStatus !=''">
+                and pc.pay_status=#{payStatus}
+            </if>
+
+            <if test="merchantId !=null and merchantId !=''">
+                and pc.merchant_id=#{merchantId}
+            </if>
+
+            <if test="clientId !=null and clientId !=''">
+                and pc.client_id=#{clientId}
+            </if>
+
+        </where>
+
+        <if test="orderby !=null and orderby !=''">
+            order by ${orderby}
+        </if>
+        <if test="orderby ==null">
+            order by pc.CREATE_TIME desc
+        </if>
+        limit #{start},#{end}
+    </select>
+    <!--查询总体记录数-->
+    <select id="queryCount" parameterType="Map" resultType="int">
+        SELECT count(1) count
+        from pay_cash pc
+        inner join sys_user su on pc.merchant_id=su.id
+        left join sys_user su1 on pc.proxy_id=su1.id
+        left join sys_user su2 on pc.client_id=su2.id
+        <where>
+
+            <if test="merchantNo !=null and merchantNo !=''">
+                and su.username like "%"#{merchantNo}"%"
+            </if>
+
+            <if test="sn !=null and sn !=''">
+                and pc.sn like "%"#{sn}"%"
+            </if>
+
+            <if test="merchantSn !=null and merchantSn !=''">
+                and pc.merchant_sn like "%"#{merchantSn}"%"
+            </if>
+
+            <if test="bankAccname !=null and bankAccname !=''">
+                and pc.bank_accname like "%"#{bankAccname}"%"
+            </if>
+
+            <if test="startTime !=null and startTime !=''">
+                and pc.CREATE_TIME <![CDATA[  >=  ]]> #{startTime}
+            </if>
+
+            <if test="endTime !=null and endTime !=''">
+                and pc.CREATE_TIME <![CDATA[  <  ]]>#{endTime}
+            </if>
+
+            <if test="payStartTime !=null and payStartTime !=''">
+                and pc.pay_time <![CDATA[  >=  ]]> #{payStartTime}
+            </if>
+
+            <if test="payEndTime !=null and payEndTime !=''">
+                and pc.pay_time <![CDATA[  <  ]]>#{payEndTime}
+            </if>
+
+            <if test="payStatus !=null and payStatus !=''">
+                and pc.pay_status=#{payStatus}
+            </if>
+
+            <if test="merchantId !=null and merchantId !=''">
+                and pc.merchant_id=#{merchantId}
+            </if>
+            <if test="clientId !=null and clientId !=''">
+                and pc.client_id=#{clientId}
+            </if>
+        </where>
+    </select>
+    <!--添加记录-->
+    <insert id="addSave" parameterType="com.city.city_collector.admin.pay.entity.PayCash" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into
+        pay_cash(merchant_id,merchant_sn,proxy_id,sn,cash_type,amount,commission,bank_accno,bank_accname,bank_name,bank_subname,bank_id,bank_accid,bank_accmobile,notify_url,remark,pay_time,`status`,pay_status,notify_status,client_id,real_money,bank_code,client_sn,pay_type,apiremark,bank_province,bank_city,bank_ifsc,bank_nation,btype,proxy_money,user_type,channel_type)
+        value(#{merchantId},#{merchantSn},#{proxyId},#{sn},#{cashType},#{amount},#{commission},#{bankAccno},#{bankAccname},#{bankName},#{bankSubname},#{bankId},#{bankAccid},#{bankAccmobile},#{notifyUrl},#{remark},#{payTime},#{status},#{payStatus},#{notifyStatus},#{clientId},#{realMoney},#{bankCode},#{clientSn},#{payType},#{apiremark},#{bankProvince},#{bankCity},#{bankIfsc},#{bankNation},#{btype},#{proxyMoney},#{userType},#{channelType})
+    </insert>
+    <!--查询单条记录-->
+    <select id="querySingle" parameterType="Map" resultType="com.city.city_collector.admin.pay.entity.PayCash">
+        select pc.id id,pc.merchant_id merchantId,pc.merchant_sn merchantSn,
+        pc.proxy_id proxyId,pc.sn sn,pc.cash_type cashType,amount,pc.CREATE_TIME createTime,
+        pc.bank_province bankProvince,pc.bank_city bankCity,
+        pc.commission commission,bank_accno bankAccno,bank_accname bankAccname,bank_name bankName,bank_subname
+        bankSubname,
+        pc.bank_id bankId,bank_accid bankAccid,bank_accmobile bankAccmobile,notify_url notifyUrl,
+        remark,pay_time payTime,pc.`status` `status`,pc.pay_status payStatus,notify_status notifyStatus,client_id
+        clientId,real_money realMoney,bank_code bankCode
+        ,pc.client_sn clientSn,client_money clientMoney,client_commission clientCommission,client_real_money
+        clientRealMoney,pay_type payType,apiremark
+        ,bank_ifsc bankIfsc,bank_nation bankNation,btype,proxy_money proxyMoney,user_type userType,pc.channel_type
+        channelType
+        from pay_cash pc
+        <where>
+            <if test="id !=null">
+                and pc.id=#{id}
+            </if>
+            <if test="sn !=null and sn !=''">
+                and pc.sn=#{sn}
+            </if>
+            <if test="merchantSn !=null and merchantSn !=''">
+                and pc.merchant_sn=#{merchantSn}
+            </if>
+        </where>
+        limit 1
+    </select>
+    <!--编辑数据-->
+    <update id="editSave" parameterType="com.city.city_collector.admin.pay.entity.PayCash">
+        update pay_cash
+        <set>
+            <!--
+                <if test="paramgroup_id !=null and paramgroup_id !=''">
+                      paramgroup_id=#{paramgroup_id},
+                  </if>
+                -->
+
+        </set>
+        where id=#{id}
+    </update>
+
+    <!--删除数据-->
+    <delete id="delete" parameterType="java.lang.String">
+        delete from pay_cash where id in (${_parameter})
+    </delete>
+    <!-- 更新提现状态 -->
+    <update id="updateCashStatus" parameterType="com.city.city_collector.admin.pay.entity.PayCash">
+        update pay_cash
+        set `pay_status`=#{payStatus}
+        <if test="payTime !=null">
+            ,pay_time=#{payTime}
+        </if>
+        <if test="notifyStatus !=null">
+            ,notify_status=#{notifyStatus}
+        </if>
+        <if test="remark !=null">
+            ,remark=#{remark}
+        </if>
+        where id=#{id}
+    </update>
+
+    <update id="updateMerchantClientCashSubmit" parameterType="com.city.city_collector.admin.pay.entity.PayCash">
+        update pay_cash
+        set
+        `pay_status`=#{payStatus},client_id=#{clientId},client_money=#{clientMoney},client_commission=#{clientCommission}
+        ,client_real_money=#{clientRealMoney},remark=#{remark}
+        <if test="payType !=null">
+            ,pay_type=#{payType}
+        </if>
+        where id=#{id}
+    </update>
+
+    <update id="updateNotifyCash" parameterType="com.city.city_collector.admin.pay.entity.PayCash">
+        update pay_cash
+        set notify_status=#{notifyStatus}
+
+        where id=#{id}
+    </update>
+    <!-- 更新提现备注 -->
+    <update id="updateCashRemark" parameterType="com.city.city_collector.admin.pay.entity.PayCash">
+        update pay_cash
+        set remark=#{remark}
+        where id=#{id}
+    </update>
+
+    <!-- 查询已成功且通知状态为未通知且由API发起的订单 -->
+    <select id="querySuccessCashOrder" parameterType="Map"
+            resultType="com.city.city_collector.admin.pay.entity.PayCash">
+        select id,merchant_id merchantId,merchant_sn merchantSn,
+        proxy_id proxyId,sn,cash_type cashType,amount,CREATE_TIME createTime,
+        commission,bank_accno bankAccno,bank_accname bankAccname,bank_name bankName,bank_subname bankSubname,
+        bank_id bankId,bank_accid bankAccid,bank_accmobile bankAccmobile,notify_url notifyUrl,
+        remark,pay_time payTime,`status`,pay_status payStatus,notify_status notifyStatus,client_id clientId,real_money
+        realMoney,bank_code bankCode
+        ,client_sn clientSn,client_money clientMoney,client_commission clientCommission,client_real_money
+        clientRealMoney,pay_type payType,apiremark
+        ,bank_ifsc bankIfsc,bank_nation bankNation,btype
+        from pay_cash pc
+        where pc.pay_status in (1,5) and (pc.notify_status=0 or pc.notify_status is null) and pc.cash_type=1
+    </select>
+
+    <!-- 查询需要通知的订单 -->
+    <select id="queryNeedNotifyCashOrder" parameterType="Map"
+            resultType="com.city.city_collector.admin.pay.entity.PayCash">
+        select id,merchant_id merchantId,merchant_sn merchantSn,
+        proxy_id proxyId,sn,cash_type cashType,amount,CREATE_TIME createTime,
+        commission,bank_accno bankAccno,bank_accname bankAccname,bank_name bankName,bank_subname bankSubname,
+        bank_id bankId,bank_accid bankAccid,bank_accmobile bankAccmobile,notify_url notifyUrl,notify_count notifyCount,
+        remark,pay_time payTime,`status`,pay_status payStatus,notify_status notifyStatus,client_id clientId,real_money
+        realMoney,bank_code bankCode
+        ,client_sn clientSn,client_money clientMoney,client_commission clientCommission,client_real_money
+        clientRealMoney,pay_type payType,apiremark
+        from pay_cash
+        where
+        pay_status in (1,2,5) and notify_status=1 and (deal_status is null or deal_status=0) and cash_type=1
+        <![CDATA[
+				and (notify_count is null or notify_count<5)
+				and (notify_time is null or TIMESTAMPDIFF(SECOND,notify_time,SYSDATE())>notify_count*5 )
+			]]>
+    </select>
+
+    <update id="updateNotifyOrder" parameterType="com.city.city_collector.admin.pay.entity.PayCash">
+        update pay_cash
+        set notify_count=#{notifyCount},notify_time=SYSDATE(),deal_status=#{dealStatus}
+        where id=#{id}
+    </update>
+
+    <!-- 查询导出数据-管理员 -->
+    <select id="queryExportList" parameterType="Map" resultType="Map">
+        select pc.sn sn,su.username merchantNo,pc.merchant_sn merchantSn,su2.username clientNo,su2.`name`
+        clientName,DATE_FORMAT(pc.CREATE_TIME,'%Y-%m-%d %T') createTime,DATE_FORMAT(pc.pay_time,'%Y-%m-%d %T') payTime,
+        pc.real_money money,pc.bank_accno cardNo,pc.bank_name bankName,pc.bank_accname cardName,pc.bank_ifsc
+        ifsc,pc.bank_nation nation
+        ,amount,commission
+        ,pc.bank_subname bankSubname,pc.bank_province province,pc.bank_city city
+        ,case when pc.pay_status =0 then '待审核' when pc.pay_status=1 then '失败' when pc.pay_status=2 then '已拒绝' when
+        pc.pay_status=3 then '审核通过' when pc.pay_status=4 then '处理中' when pc.pay_status=5 then '已支付' else '' end
+        payStatus
+        ,case when pc.channel_type=1 then '代付' else '下发' end channelType
+        ,case when pc.cash_type=1 then 'API发起' else '商户后台发起' end cashType
+        from pay_cash pc
+        inner join sys_user su on pc.merchant_id=su.id
+        left join sys_user su1 on pc.proxy_id=su1.id
+        left join sys_user su2 on pc.client_id=su2.id
+        <where>
+
+            <if test="merchantNo !=null and merchantNo !=''">
+                and su.username like "%"#{merchantNo}"%"
+            </if>
+
+            <if test="sn !=null and sn !=''">
+                and pc.sn like "%"#{sn}"%"
+            </if>
+
+            <if test="merchantSn !=null and merchantSn !=''">
+                and pc.merchant_sn like "%"#{merchantSn}"%"
+            </if>
+
+            <if test="bankAccname !=null and bankAccname !=''">
+                and pc.bank_accname like "%"#{bankAccname}"%"
+            </if>
+
+            <if test="startTime !=null and startTime !=''">
+                and pc.CREATE_TIME <![CDATA[  >=  ]]> #{startTime}
+            </if>
+
+            <if test="endTime !=null and endTime !=''">
+                and pc.CREATE_TIME <![CDATA[  <  ]]>#{endTime}
+            </if>
+
+            <if test="payStartTime !=null and payStartTime !=''">
+                and pc.pay_time <![CDATA[  >=  ]]> #{payStartTime}
+            </if>
+
+            <if test="payEndTime !=null and payEndTime !=''">
+                and pc.pay_time <![CDATA[  <  ]]>#{payEndTime}
+            </if>
+
+            <if test="payStatus !=null and payStatus !=''">
+                and pc.pay_status=#{payStatus}
+            </if>
+
+            <if test="merchantId !=null and merchantId !=''">
+                and pc.merchant_id=#{merchantId}
+            </if>
+            <if test="clientId !=null and clientId !=''">
+                and pc.client_id=#{clientId}
+            </if>
+        </where>
+
+        <if test="orderby !=null and orderby !=''">
+            order by ${orderby}
+        </if>
+        <if test="orderby ==null">
+            order by pc.CREATE_TIME desc
+        </if>
+    </select>
+
+    <!-- 查询导出数据-商户 -->
+    <select id="queryExportListMerchant" parameterType="Map" resultType="Map">
+        select pc.sn sn,pc.merchant_sn merchantSn,su.username merchantNo,su.`name`
+        merchantName,DATE_FORMAT(pc.CREATE_TIME,'%Y-%m-%d %T') createTime,DATE_FORMAT(pc.pay_time,'%Y-%m-%d %T')
+        payTime,
+        pc.real_money money,pc.bank_accno cardNo,pc.bank_name bankName,pc.bank_ifsc ifsc,pc.bank_nation
+        nation,pc.bank_accname cardName
+        ,amount,commission
+        ,pc.bank_subname bankSubname,pc.bank_province province,pc.bank_city city
+        ,case when pc.pay_status =0 then '待审核' when pc.pay_status=1 then '失败' when pc.pay_status=2 then '已拒绝' when
+        pc.pay_status=3 then '审核通过' when pc.pay_status=4 then '处理中' when pc.pay_status=5 then '已支付' else '' end
+        payStatus
+        ,case when pc.channel_type=1 then '代付' else '下发' end channelType
+        ,case when pc.cash_type=1 then 'API发起' else '商户后台发起' end cashType
+        from pay_cash pc
+        inner join sys_user su on pc.merchant_id=su.id
+        left join sys_user su1 on pc.proxy_id=su1.id
+        left join sys_user su2 on pc.client_id=su2.id
+        <where>
+
+            <if test="merchantNo !=null and merchantNo !=''">
+                and su.username like "%"#{merchantNo}"%"
+            </if>
+
+            <if test="sn !=null and sn !=''">
+                and pc.sn like "%"#{sn}"%"
+            </if>
+
+            <if test="merchantSn !=null and merchantSn !=''">
+                and pc.merchant_sn like "%"#{merchantSn}"%"
+            </if>
+
+            <if test="bankAccname !=null and bankAccname !=''">
+                and pc.bank_accname like "%"#{bankAccname}"%"
+            </if>
+
+            <if test="startTime !=null and startTime !=''">
+                and pc.CREATE_TIME <![CDATA[  >=  ]]> #{startTime}
+            </if>
+
+            <if test="endTime !=null and endTime !=''">
+                and pc.CREATE_TIME <![CDATA[  <  ]]>#{endTime}
+            </if>
+
+            <if test="payStartTime !=null and payStartTime !=''">
+                and pc.pay_time <![CDATA[  >=  ]]> #{payStartTime}
+            </if>
+
+            <if test="payEndTime !=null and payEndTime !=''">
+                and pc.pay_time <![CDATA[  <  ]]>#{payEndTime}
+            </if>
+
+            <if test="payStatus !=null and payStatus !=''">
+                and pc.pay_status=#{payStatus}
+            </if>
+
+            <if test="merchantId !=null and merchantId !=''">
+                and pc.merchant_id=#{merchantId}
+            </if>
+            <if test="clientId !=null and clientId !=''">
+                and pc.client_id=#{clientId}
+            </if>
+        </where>
+
+        <if test="orderby !=null and orderby !=''">
+            order by ${orderby}
+        </if>
+        <if test="orderby ==null">
+            order by pc.CREATE_TIME desc
+        </if>
+    </select>
+
+    <select id="queryCashDetail" parameterType="Map" resultType="Map">
+        select su.username merchantNo,su.`name` merchantName,pc.sn sn,pc.merchant_sn merchantSn,
+        case when pc.cash_type=1 then 'API提现' else '商户发起' end cashType,pc.amount amount,pc.commission
+        commission,pc.real_money realMoney,
+        pc.bank_accno cardNo,pc.bank_accname cardName,pc.bank_name bankName,pc.bank_subname bankSubName,pc.bank_code
+        bankCode,
+        pc.bank_province bankProvince,pc.bank_city bankCity,DATE_FORMAT(pc.create_time,'%Y-%m-%d %H:%i:%S') createTime,
+        pc.remark remark,pc.notify_url notifyUrl,DATE_FORMAT(pc.pay_time,'%Y-%m-%d %H:%i:%S') payTime,pc.pay_status
+        payStatus,
+        pc.`status` `status`,client.username clientNo,client.`name` clientName,pc.client_sn clientSn,pc.client_money
+        clientMoney,
+        pc.pay_type payType,pc.deal_status dealStatus,pc.notify_count notifyCount,pc.notify_time notifyTime,pc.apiremark
+        apiremark
+        ,pc.bank_ifsc bankIfsc,pc.bank_nation bankNation,pc.btype btype
+        ,pc.proxy_money proxyMoney,proxy.username proxyName,pc.channel_type channelType
+        from pay_cash pc
+        inner join sys_user su on pc.merchant_id=su.id
+        left join sys_user client on pc.client_id=client.id
+        left join sys_user proxy on pc.proxy_id=proxy.id
+        <where>
+            <if test="id !=null and id !=''">
+                and pc.id=#{id}
+            </if>
+            <if test="sn !=null and sn !=''">
+                and pc.sn=#{sn}
+            </if>
+            <if test="merchantSn !=null and merchantSn !=''">
+                and pc.merchant_sn=#{merchantSn}
+            </if>
+        </where>
+        limit 1
+    </select>
+
+    <!-- 获取提现模块启用的程序 -->
+    <select id="queryClientInfoByModel" resultType="Map">
+        select su.id id,su.username username,su.`name` `name`,FORMAT(IFNULL(money,0),2) money,
+        FORMAT(IFNULL(frozen_money,0),2) frozenMoney,cash_commission cashCommission,cash_ratio cashRatio,
+        FORMAT(IFNULL(money,0)-IFNULL(frozen_money,0),2) amount
+        from sys_user su
+        inner join pay_client_model pcm on su.paykey=pcm.keyname
+        where su.type=3 and pcm.status=1 and pay_status=1
+    </select>
+
+    <!-- 获取待处理的订单数 -->
+    <select id="queryWaitDealCount" parameterType="Map" resultType="int">
+        select count(1) cou from pay_cash where pay_status=0
+    </select>
+
+    <insert id="updateAutoModel" parameterType="Map">
+        insert into pay_cash_auto_model(cur_auto_model, date)
+        value(#{modelID}, #{date})
+        on duplicate key update
+        cur_auto_model = #{modelID}
+    </insert>
+
+    <select id="queryAutoPayModule" resultType="Map">
+        select su.id id,su.username username,su.`name` `name`,FORMAT(IFNULL(money,0),2) money,
+        FORMAT(IFNULL(frozen_money,0),2) frozenMoney,cash_commission cashCommission,cash_ratio cashRatio,
+        FORMAT(IFNULL(money,0)-IFNULL(frozen_money,0),2) amount
+        from sys_user su
+        inner join pay_client_model pcm on su.paykey=pcm.keyname
+        where su.type=3 and pcm.status=1 and pay_status=1 and su.id = (select cur_auto_model from pay_cash_auto_model order by date desc limit 1)
+    </select>
+
+    <select id="queryCashOrderCountByMerchant" parameterType="Map" resultType="int">
+        select count(*) from pay_cash where bank_accno=#{bankAccountNo} and to_days(CREATE_TIME) = to_days(now());
+    </select>
+
+</mapper>

@@ -1,0 +1,138 @@
+.admin-main {
+    margin: 15px;
+}
+
+.imglist {
+    font: 12px verdana, arial, sans-serif; /* 设置文字大小和字体样式 */
+}
+
+.imglist, .imglist li {
+    list-style: none; /* 将默认的列表符号去掉 */
+    padding: 0; /* 将默认的内边距去掉 */
+    margin: 0; /* 将默认的外边距去掉 */
+}
+
+.imglist li {
+    margin-top: 5px;
+    margin-left: 5px; /* 设置内边距 */
+    float: left; /* 往左浮动 */
+    width: 70px;
+    padding: 5px;
+    background-color: #FFFFFF;
+}
+
+.imglist li:hover {
+    background-color: #F4F4F4;
+    cursor: pointer;
+}
+
+.imglist li .img-container {
+    position: relative;
+    width: 70px;
+    height: 70px;
+}
+
+.imglist li .img-container .main-img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.imglist li .img-container .check-img {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    left: -5px;
+    top: -5px;
+    display: none;
+}
+
+.imglist li .img-container .main-img img {
+    max-height: 70px;
+    max-width: 70px;
+    width: expression(this.width > 70 && this.width > this.height ? 70 : auto);
+    height: expression(this.height > 70 ? 70 : auto);
+}
+
+.imglist li .txt {
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+    height: 20px;
+}
+
+.imgpage {
+    position: fixed;
+    left: 0px;
+    right: 0;
+    bottom: 0;
+    height: 40px;
+    line-height: 40px;
+    padding: 0 15px;
+    background-color: #eee;
+    z-index: 999;
+}
+
+ul.pagination {
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+}
+
+ul.pagination li {
+    display: inline;
+}
+
+ul.pagination li a {
+    color: black;
+    float: left;
+    padding: 8px 16px;
+    text-decoration: none;
+    font-size: 10px;
+    height: 12px;
+}
+
+ul.pagination li a.active {
+    background-color: #4CAF50;
+    color: white;
+}
+
+ul.pagination li a:hover:not(.active) {
+    background-color: #ddd;
+}
+
+ul.pagination li a {
+    transition: background-color .3s;
+}
+
+ul.pagination li a {
+    border: 1px solid #ddd; /* Gray */
+}
+
+ul.pagination li .pginfo {
+    color: #4CAF50;
+}
+
+.pagination li:first-child a {
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+.pagination li:last-child a {
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+#pageDiv {
+    position: absolute;
+    left: 15px;
+    right: 15px;
+    bottom: 5px;
+}
+
+.imgdesc {
+    color: #FF0000;
+}

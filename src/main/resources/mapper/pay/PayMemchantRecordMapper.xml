@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd"
+        >
+<mapper namespace="com.city.city_collector.admin.pay.dao.PayMemchantRecordDao">
+    <!--查询分页数据-->
+    <select id="queryPage" parameterType="Map" resultType="Map">
+        select id,CREATE_TIME createTime,`no`,merchant_no merchantNo,order_sn
+        orderSn,type,money,balance,remark,reason,ratio,commission,remark1
+        from pay_memchant_record
+        <where>
+
+            <if test="merchantId !=null and merchantId !=''">
+                and merchant_id=#{merchantId}
+            </if>
+
+            <if test="orderSn !=null and orderSn !=''">
+                and order_sn like "%"#{orderSn}"%"
+            </if>
+
+            <if test="startTime !=null and startTime !=''">
+                and CREATE_TIME <![CDATA[  >=  ]]> #{startTime}
+            </if>
+
+            <if test="endTime !=null and endTime !=''">
+                and CREATE_TIME <![CDATA[  <=  ]]>#{endTime}
+            </if>
+
+            <if test="type !=null and type !=''">
+                and type=#{type}
+            </if>
+
+        </where>
+
+        <if test="orderby !=null and orderby !=''">
+            order by ${orderby}
+        </if>
+        <if test="orderby ==null">
+            order by CREATE_TIME desc
+        </if>
+        limit #{start},#{end}
+    </select>
+
+
+    <select id="queryExportList" parameterType="Map" resultType="Map">
+
+        SELECT a.*, pay_order.merchant_sn merchantSn from (
+
+        select id,CREATE_TIME createTime,`no`,merchant_no merchantNo,order_sn orderSn,
+        case
+        when pay_memchant_record.type=0 then '提现手续费'
+        when pay_memchant_record.type=1 then '完成提现'
+        when pay_memchant_record.type=2 then '完成订单'
+        when pay_memchant_record.type=3 then '订单手续费'
+        when pay_memchant_record.type=4 then '完成充值'
+        when pay_memchant_record.type=5 then '充值手续费'
+        when pay_memchant_record.type=6 then '人工调账'
+        else '其他'
+        end type,
+
+        case
+        when pay_memchant_record.reason=0 then '后台提现'
+        when pay_memchant_record.reason=1 then '线下结算'
+        when pay_memchant_record.reason=2 then '错误补单'
+        else '其他原因'
+        end reason,
+        money,balance,remark,ratio,commission,remark1
+        from pay_memchant_record
+        <where>
+
+            <if test="merchantId !=null and merchantId !=''">
+                and merchant_id=#{merchantId}
+            </if>
+
+            <if test="orderSn !=null and orderSn !=''">
+                and order_sn like "%"#{orderSn}"%"
+            </if>
+
+            <if test="startTime !=null and startTime !=''">
+                and CREATE_TIME <![CDATA[  >=  ]]> #{startTime}
+            </if>
+
+            <if test="endTime !=null and endTime !=''">
+                and CREATE_TIME <![CDATA[  <=  ]]>#{endTime}
+            </if>
+
+            <if test="type !=null and type !=''">
+                and type=#{type}
+            </if>
+
+        </where>
+
+        <if test="orderby !=null and orderby !=''">
+            order by ${orderby}
+        </if>
+        <if test="orderby ==null">
+            order by CREATE_TIME desc
+        </if>
+        ) a LEFT JOIN pay_order ON a.orderSn = pay_order.sn
+    </select>
+
+
+    <!--查询总体记录数-->
+    <select id="queryCount" parameterType="Map" resultType="int">
+        SELECT count(1) count
+        from pay_memchant_record
+        <where>
+
+            <if test="merchantId !=null and merchantId !=''">
+                and merchant_id=#{merchantId}
+            </if>
+
+            <if test="orderSn !=null and orderSn !=''">
+                and order_sn like "%"#{orderSn}"%"
+            </if>
+
+            <if test="startTime !=null and startTime !=''">
+                and CREATE_TIME <![CDATA[  >=  ]]> #{startTime}
+            </if>
+
+            <if test="endTime !=null and endTime !=''">
+                and CREATE_TIME <![CDATA[  <=  ]]>#{endTime}
+            </if>
+
+            <if test="type !=null and type !=''">
+                and type=#{type}
+            </if>
+
+        </where>
+    </select>
+    <!--添加记录-->
+    <insert id="addSave" parameterType="com.city.city_collector.admin.pay.entity.PayMemchantRecord"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into
+        pay_memchant_record(no,merchant_no,order_sn,type,money,balance,remark,reason,merchant_id,merchant_name,ratio,commission,remark1)
+        value(#{no},#{merchantNo},#{orderSn},#{type},#{money},#{balance},#{remark},#{reason},#{merchantId},#{merchantName},#{ratio},#{commission},#{remark1})
+    </insert>
+    <!--查询单条记录-->
+    <select id="querySingle" parameterType="Map"
+            resultType="com.city.city_collector.admin.pay.entity.PayMemchantRecord">
+        select id,`no`,merchant_no merchantNo,order_sn orderSn,type,money,balance,remark,reason,ratio,commission,remark1
+        from pay_memchant_record where id=#{id}
+    </select>
+    <!--编辑数据-->
+    <update id="editSave" parameterType="com.city.city_collector.admin.pay.entity.PayMemchantRecord">
+        update pay_memchant_record
+        <set>
+            <!--
+                <if test="paramgroup_id !=null and paramgroup_id !=''">
+                      paramgroup_id=#{paramgroup_id},
+                  </if>
+                -->
+
+        </set>
+        where id=#{id}
+    </update>
+
+    <!--删除数据-->
+    <delete id="delete" parameterType="java.lang.String">
+        delete from pay_memchant_record where id in (${_parameter})
+    </delete>
+</mapper>

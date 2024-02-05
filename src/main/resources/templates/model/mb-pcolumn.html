@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <@includeNew path="/model/common/mb-header.html" encoding="UTF-8">
+</
+@includeNew>
+
+</head>
+
+<body>
+<header class="aui-bar aui-bar-nav">
+    <!--
+        <a class="aui-pull-left aui-btn" href="javascript:;" onclick="back()">
+            <span class="aui-iconfont aui-icon-left"></span>
+        </a>
+     -->
+    <div class="aui-title">${webname}</div>
+    <a class="aui-pull-right aui-btn" onclick="opmenu()">
+        <img src="${context}/aui/images/common/list.png" style="height:1.5rem;width:auto;"/>
+    </a>
+</header>
+
+<div class="aui-content">
+    <div id="top"></div>
+
+    <@includeNew path="/model/common/mb-column.html" encoding="UTF-8">
+</
+@includeNew>
+
+<@includeNew path="/model/common/pc-adheader.html" encoding="UTF-8">
+</
+@includeNew>
+
+<div class="columnnav">
+    当前位置：<a href="/">首页</a>&nbsp;>&nbsp;${cname }
+</div>
+
+<div class="navnew ntitle">
+    <img src="${context}/aui/images/common/vd.png" style="height:1rem;width:auto;float:left;"/><span style="">&nbsp;${cname }</span>
+</div>
+
+<div class="aui-row ysbox1" id="videoList">
+
+</div>
+
+<div style="width:100%;margin-top:10px;text-align:center;">
+    <a class="aui-btn aui-btn-info" href="javascript:prevPage();" style="float:left;margin-left:5px;width:20%;">«</a>&nbsp;<span
+        id="npage" style="font-size:0.65rem;font-weight:bold;">第&nbsp;1/1&nbsp;页</span>&nbsp;<a
+        class="aui-btn aui-btn-info" href="javascript:nextPage();" style="float:right;margin-right:5px;width:20%;">»</a>
+</div>
+
+<div id="btbanner-list"></div>
+
+<@includeNew path="/model/common/mb-footer.html" encoding="UTF-8">
+</@includeNew>
+</div>
+
+<@includeNew path="/model/common/mb-xfadv.html" encoding="UTF-8"> </@includeNew>
+
+<div class="topxf" id="topxf">
+    <a href="#top"><img src="${context}/aui/images/common/top.png" style="width:100%;"/></a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script src="${context}/aui/script/swiper-3.3.1.jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="${context}/aui/script/aui-popup-new.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/busy-load/dist/app.min.js"></script>
+<script type="text/javascript" src="${context}/bootstrap/js/jquery.lazyload.min.js"></script>
+
+<script type="text/javascript">
+    var popup = new auiPopup();
+
+    var cid = '${cid}';
+    var pageNum = 1;
+    var totalPage = 1;
+
+    $(document).ready(function () {
+
+        $("#column_${cid}").addClass("selcolumn");
+        $("#column_${cid} a").css("color", "#FFFFFF");
+
+        updateData(pageNum);
+
+    <@includeNew
+        path = "/model/common/pc-adjs.html"
+        encoding = "UTF-8" > < /@includeNew>
+    });
+
+    function back() {
+        history.go(-1);
+    }
+
+    function opmenu() {
+        popup.init({
+            frameBounces: true,
+            location: "top-right",
+            buttons: [{
+                image: '${context}/aui/images/common/index.png',
+                text: '首页',
+                value: 'lt'
+            }, {
+                image: '${context}/aui/images/common/forum.png',
+                text: '论坛',
+                value: 'lt'
+            }
+                /**
+                 ,{
+					image:'',
+					text:'菜单1',
+					value:'cd1'
+				},{
+					image:'',
+					text:'菜单2',
+					value:'cd2'
+				}
+                 **/
+            ],
+        }, function (ret) {
+            if (ret) {
+                if (ret.buttonIndex == 1) {
+                    location.href = "/";
+                } else if (ret.buttonIndex == 2) {
+                    alert("暂未开放");
+                } else if (ret.buttonIndex == 3) {
+                    alert("暂未开放");
+                }
+            }
+        })
+    }
+
+    function updateData(npageNum) {
+        $("body").busyLoad("show", {
+            background: "rgba(0, 0, 0, 0.2)"
+        });
+        $.ajax({
+            type: 'get',
+            url: "${context}/data/column_${cid}_" + npageNum + ".json",
+            data: {},
+            cache: false,
+            success: function (data) {
+                try {
+                    pageNum = data.page;
+                    totalPage = data.totalPage;
+                    var dl = data.list;
+
+                    var $str = '';
+                    for (var i = 0; i < dl.length; i++) {
+                        $str += '<a href="${context}/video/mvideo_' + dl[i].id + '.html" target="_blank">' +
+                            '<div class="aui-col-xs-6 ysbox2"> ' +
+                            '<div class="imgbox1"><div> ' +
+                            '<img src="${context}/bootstrap/image/zwt.png" data-original="' + dl[i].vpic + '" class="img1" /> ' +
+                            '</div>' +
+                            '</div> ' +
+                            '<div class="zytxt">' + dl[i].vname + '</div>' +
+                            '</div></a>';
+                    }
+
+                    $("#videoList").html($str);
+
+                    $("body").scrollTop(0);
+                    $(window).scrollTop(0);
+                    $(".aui-content").scrollTop(0);
+
+                    $(".img1").lazyload({
+                        effect: "show"
+                        , container: $("#videoList")
+                    });
+
+                    $("#npage").html("第&nbsp;" + pageNum + "/" + totalPage + "&nbsp;页");
+
+                    $("body").busyLoad("hide");
+                } catch (e) {
+                    alert("获取列表失败，请重试!");
+                    $("body").busyLoad("hide");
+                }
+            },
+            error: function (xhr, desc, err) {
+                $("body").busyLoad("hide");
+                alert("获取列表失败，请重试!");
+            }
+        });
+    }
+
+    function prevPage() {
+        var np = pageNum - 1;
+        if (np < 1) {
+            alert("已是第一页");
+            return;
+        }
+
+        updateData(pageNum - 1);
+    }
+
+    function nextPage() {
+        if (pageNum >= totalPage) {
+            alert("已是最后一页");
+            return;
+        }
+        updateData(pageNum + 1);
+    }
+</script>
+
+</body>
+
+</html>

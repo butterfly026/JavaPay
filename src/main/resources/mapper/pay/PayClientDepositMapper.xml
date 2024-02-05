@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd"
+        >
+<mapper namespace="com.city.city_collector.admin.pay.dao.PayClientDepositDao">
+    <!--查询分页数据-->
+    <select id="queryPage" parameterType="Map" resultType="Map">
+        select client.id,client.username username,client.`name` `name`,IFNULL(pcd.deposit,0) deposit,IFNULL(pcd.money,0)
+        money,
+        case when pcd.paramcode is not null and pcd.querydealcode is not null then 1 else 0 end
+        api,IFNULL(pcd.reqtype,0) reqtype,
+        pcd.vs vs
+        from sys_user client
+        left join pay_client_deposit pcd on client.id=pcd.client_id
+        where type=3
+        <where>
+
+            <if test="username !=null and username !=''">
+                and username like "%"#{username}"%"
+            </if>
+
+        </where>
+        <if test="orderby !=null and orderby !=''">
+            order by ${orderby}
+        </if>
+        limit #{start},#{end}
+    </select>
+    <!--查询总体记录数-->
+    <select id="queryCount" parameterType="Map" resultType="int">
+        SELECT count(1) count
+        from sys_user client
+        left join pay_client_deposit pcd on client.id=pcd.client_id
+        where type=3
+        <where>
+
+            <if test="username !=null and username !=''">
+                and username like "%"#{username}"%"
+            </if>
+
+        </where>
+    </select>
+    <!--添加记录-->
+    <insert id="addSave" parameterType="com.city.city_collector.admin.pay.entity.PayClientDeposit"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into pay_client_deposit(client_id,deposit,money,paramcode,querydealcode,reqtype,vs)
+        value(#{clientId},#{deposit},#{money},#{paramcode},#{querydealcode},#{reqtype},#{vs})
+    </insert>
+    <!--查询单条记录-->
+    <select id="querySingle" parameterType="Map" resultType="com.city.city_collector.admin.pay.entity.PayClientDeposit">
+        select client.id id,client.username username,client.`name` `name`,pcd.deposit deposit,pcd.money money,
+        pcd.paramcode paramcode,pcd.querydealcode querydealcode,pcd.reqtype reqtype,pcd.vs vs
+        from sys_user client
+        left join pay_client_deposit pcd on client.id=pcd.client_id
+        where client.id=#{id}
+        <if test="clientId !=null and clientId !=''">
+            and pcd.client_id=#{clientId}
+        </if>
+    </select>
+    <!--编辑数据-->
+    <update id="editSave" parameterType="com.city.city_collector.admin.pay.entity.PayClientDeposit">
+        update pay_client_deposit
+        set
+        deposit=#{deposit},
+        money=#{money},
+        paramcode=#{paramcode},
+        querydealcode=#{querydealcode},
+        reqtype=#{reqtype},
+        vs=vs+1
+        where client_id=#{id}
+    </update>
+
+    <!--删除数据-->
+    <!--
+    <delete id="delete" parameterType="java.lang.String">
+      delete from pay_client_deposit where id in (${_parameter})
+    </delete>
+     -->
+</mapper>

@@ -1,0 +1,44 @@
+﻿<html>
+<head>
+    <link href="lib/codemirror.css" rel="stylesheet" type="text/css">
+    <link href="theme/monokai.css" rel="stylesheet" type="text/css">
+    <link href="addon/display/fullscreen.css" rel="stylesheet" type="text/css">
+    <link href="addon/hint/show-hint.css" rel="stylesheet" type="text/css">
+
+    <!-- 引入CodeMirror核心文件 -->
+    <script type="text/javascript" src="lib/codemirror.js"></script>
+
+    <!-- CodeMirror支持不同语言，根据需要引入JS文件 -->
+    <!-- 因为HTML混合语言依赖Javascript、XML、CSS语言支持，所以都要引入 -->
+    <script type="text/javascript" src="mode/javascript/javascript.js"></script>
+    <script type="text/javascript" src="mode/xml/xml.js"></script>
+    <script type="text/javascript" src="mode/css/css.js"></script>
+    <script type="text/javascript" src="mode/htmlmixed/htmlmixed.js"></script>
+
+    <!-- 下面分别为显示行数、括号匹配和全屏插件 -->
+    <script type="text/javascript" src="addon/selection/active-line.js"></script>
+    <script type="text/javascript" src="addon/edit/matchbrackets.js"></script>
+    <script type="text/javascript" src="addon/display/fullscreen.js"></script>
+    <script type="text/javascript" src="addon/hint/show-hint.js"></script>
+    <script type="text/javascript" src="addon/hint/xml-hint.js"></script>
+    <script type="text/javascript" src="addon/hint/html-hint.js"></script>
+</head>
+<body>
+<textarea id="code"></textarea>
+</body>
+</html>
+
+<script type="text/javascript">
+    var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+        lineNumbers: true,     // 显示行数
+        indentUnit: 2,         // 缩进单位为2
+        styleActiveLine: true, // 当前行背景高亮
+        matchBrackets: true,   // 括号匹配
+        mode: 'htmlmixed',     // HMTL混合模式
+        lineWrapping: true,    // 自动换行
+        theme: 'monokai',      // 使用monokai模版
+        extraKeys: {"Ctrl": "autocomplete"}
+    });
+
+
+</script>

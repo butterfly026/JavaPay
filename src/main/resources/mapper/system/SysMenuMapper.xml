@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd"
+        >
+<mapper namespace="com.city.city_collector.admin.system.dao.SysMenuDao">
+    <!--查询分页数据-->
+    <select id="queryPage" parameterType="Map" resultType="Map">
+        select a.id id,a.`name` `name`,a.image image,a.fid fid,b.`name` fname,a.url url,a.`order` `order`,a.`status`
+        `status`,a.permission permission,a.`type` `type`
+        from sys_menu a
+        left join sys_menu b
+        on a.fid=b.id
+        <where>
+            <if test="name !=null and name !=''">
+                and a.name like "%"#{name}"%"
+            </if>
+        </where>
+        limit #{start},#{end}
+    </select>
+    <!--查询总体记录数-->
+    <select id="queryCount" parameterType="Map" resultType="int">
+        SELECT count(1) count
+        from sys_menu
+        <where>
+            <if test="name !=null and name !=''">
+                and a.name like "%"#{name}"%"
+            </if>
+        </where>
+    </select>
+    <!--查询列表数据-->
+    <select id="queryAllMenu" resultType="Map">
+        select a.id id,a.`name` `name`,a.fid fid,a.image image,b.`name` fname,a.url url,a.`order` `order`,a.`status`
+        `status`,a.permission permission,a.`type` `type`
+        from sys_menu a
+        left join sys_menu b on a.fid=b.id
+        order by a.`order` asc
+    </select>
+    <!--添加记录-->
+    <insert id="addSave" parameterType="com.city.city_collector.admin.system.entity.SysMenu" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into sys_menu(fid,`name`,url,`order`,`status`,permission,`type`,image)
+        value(#{fid},#{name},#{url},#{order},#{status},#{permission},#{type},#{image})
+    </insert>
+    <!--查询单条记录-->
+    <select id="querySingle" parameterType="Map" resultType="com.city.city_collector.admin.system.entity.SysMenu">
+        select a.id id,a.`name` `name`,a.image image,a.fid fid,b.`name` fname,a.url url,a.`order` `order`,a.`status`
+        `status`,a.permission permission,a.`type` `type`
+        from sys_menu a
+        left join sys_menu b
+        on a.fid=b.id
+        where a.id=#{id}
+    </select>
+    <!--编辑数据-->
+    <update id="editSave" parameterType="com.city.city_collector.admin.system.entity.SysMenu">
+        update sys_menu
+        <set>
+            fid=#{fid},
+            permission=#{permission},
+            `order`=#{order},
+            <if test="url !=null">
+                url=#{url},
+            </if>
+            <if test="status !=null and status !=''">
+                `status`=#{status},
+            </if>
+            <if test="type !=null and type !=''">
+                `type`=#{type},
+            </if>
+            <if test="name !=null and name !=''">
+                `name`=#{name},
+            </if>
+            <if test="image !=null">
+                `image`=#{image},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <!--删除数据，删除关联的用户菜单，角色菜单数据-->
+    <delete id="delete" parameterType="java.lang.String">
+        delete sm,sum,srm from sys_menu sm
+        left join sys_user_menu sum on sm.id=sum.menu_id
+        left join sys_role_menu srm on sm.id=srm.menu_id
+        where sm.id in (${_parameter})
+    </delete>
+</mapper>

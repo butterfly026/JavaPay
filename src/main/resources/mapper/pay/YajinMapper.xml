@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd"
+        >
+<mapper namespace="com.city.city_collector.admin.pay.dao.YajinDao">
+
+    <insert id="insertYajin">
+        INSERT INTO channel_money (client_id, yajin, money) VALUES (#{id}, #{yajin}, #{money});
+    </insert>
+
+    <delete id="deleteYajin">
+        delete from channel_money where client_id = #{id}
+    </delete>
+
+    <update id="updateYajin">
+        update channel_money set yajin=#{yajin} where client_id = #{id}
+    </update>
+
+    <select id="selectYajin" resultType="int">
+        select yajin from channel_money where client_id = #{id}
+    </select>
+
+    <update id="addMoney">
+        update channel_money set money= money+ #{money} where client_id = #{id}
+    </update>
+
+    <select id="selectYajinMoney" resultType="map">
+        select client_id, yajin, money from channel_money where client_id = #{id}
+    </select>
+
+    <update id="updateMoney">
+        update channel_money set money= 0 where client_id = #{id}
+    </update>
+
+</mapper>

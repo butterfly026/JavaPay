@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd"
+        >
+<mapper namespace="com.city.city_collector.admin.city.dao.ConfigDao">
+    <!--查询分页数据-->
+    <select id="queryPage" parameterType="Map" resultType="Map">
+        SELECT id,cname,creq,cfoot,cadmin,logo,currency,cash_mode cashMode,nip,domain,apidomain,queueUrl
+        ,ordercount,channelkeyword,ordermoney,indexmodel,ordervalid,platformvalid,snpre,cashsnpre,notifyurl,paynotifyurl,payClientUrl,proxyopen,proxyratio
+        ,staticstime,beforetime,servermodel,autoDaiFu,selfMerchant
+        from config
+
+        limit #{start},#{end}
+    </select>
+    <!--查询总体记录数-->
+    <select id="queryCount" parameterType="Map" resultType="int">
+        SELECT count(1) count
+        from config
+
+    </select>
+    <!--添加记录-->
+    <insert id="addSave" parameterType="com.city.city_collector.admin.city.entity.Config" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into
+        config(cname,creq,cfoot,cadmin,logo,currency,cash_mode,nip,domain,apidomain,ordercount,channelkeyword,ordermoney,indexmodel,ordervalid,platformvalid,snpre,cashsnpre,notifyurl,paynotifyurl,proxyopen,proxyratio,staticstime,beforetime,queueUrl,proxyInfoBlock,notifyUrl2)
+        value(#{cname},#{creq},#{cfoot},#{cadmin},#{logo},#{currency},#{cashMode},#{nip},#{domain},#{apidomain},#{ordercount},#{channelkeyword},#{ordermoney},#{indexmodel},#{ordervalid},#{platformvalid},#{snpre},#{cashsnpre},#{notifyurl},#{paynotifyurl},#{proxyopen},#{proxyratio},#{staticstime},#{beforetime},#{queueUrl},#{proxyInfoBlock},#{notifyUrl2})
+    </insert>
+    <!--查询单条记录-->
+    <select id="querySingle" parameterType="Map" resultType="com.city.city_collector.admin.city.entity.Config">
+       select id,cname,creq,cfoot,cadmin,logo,currency,cash_mode cashMode,nip,domain,apidomain,queueUrl
+        ,proxyInfoBlock,notifyUrl2
+        ,ordercount,channelkeyword,ordermoney,indexmodel,ordervalid,platformvalid,snpre,cashsnpre,notifyurl,paynotifyurl,payClientUrl,proxyopen,proxyratio
+        ,staticstime,beforetime,servermodel,xnproxy,xnmc,xnmcno,xnmclist,zfbcc,wxcc,odxs,odmin,autoDaiFu,selfMerchant,bd
+        from config
+        limit 1
+    </select>
+    <!--编辑数据-->
+    <update id="editSave" parameterType="com.city.city_collector.admin.city.entity.Config">
+    
+        update config
+        set
+        cname=#{cname},
+        creq=#{creq},
+        cadmin=#{cadmin},
+        cfoot=#{cfoot},
+        logo=#{logo},
+        currency=#{currency},
+        cash_mode=#{cashMode},
+        nip=#{nip},
+        domain=#{domain},
+        apidomain=#{apidomain},
+        ordercount=#{ordercount},
+        channelkeyword=#{channelkeyword},
+        ordermoney=#{ordermoney},
+        ordervalid=#{ordervalid},
+        notifyurl=#{notifyurl},
+        paynotifyurl=#{paynotifyurl},
+        proxyopen=#{proxyopen},
+        proxyratio=#{proxyratio},
+        staticstime=#{staticstime},
+        beforetime=#{beforetime},
+        payClientUrl=#{payClientUrl},
+        servermodel=#{servermodel},
+        queueUrl=#{queueUrl},
+        proxyInfoBlock=#{proxyInfoBlock},
+        notifyUrl2=#{notifyUrl2},
+        platformvalid=#{platformvalid}
+        where id=#{id}
+
+    </update>
+
+    <!--删除数据-->
+    <delete id="delete" parameterType="java.lang.String">
+        delete from config where id in (${_parameter})
+    </delete>
+
+    <update id="updateAutoDaiFu" parameterType="java.lang.Integer">
+        update config set autoDaiFu = ${_parameter}
+    </update>
+</mapper>

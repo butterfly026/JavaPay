@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <@includeNew path="/model/common/mb-header.html" encoding="UTF-8">
+</
+@includeNew>
+</head>
+
+<body>
+<header class="aui-bar aui-bar-nav">
+    <div class="aui-title">${webname }</div>
+    <a class="aui-pull-right aui-btn" onclick="opmenu()">
+        <img src="${context}/aui/images/common/list.png" style="height:1.5rem;width:auto;"/>
+    </a>
+</header>
+
+<div class="aui-content">
+    <div id="top"></div>
+
+    <@includeNew path="/model/common/mb-column.html" encoding="UTF-8">
+</
+@includeNew>
+
+<@includeNew path="/model/common/pc-adheader.html" encoding="UTF-8">
+</
+@includeNew>
+
+<div class="columnnav">
+    当前位置：<a href="/">首页</a>
+</div>
+
+<div class="navnew ntitle">
+    <img src="${context}/aui/images/common/vd.png" style="height:1rem;width:auto;float:left;"/><span
+        style="">&nbsp;站长推荐</span>
+</div>
+
+<div class="aui-row ysbox1 " id="videoList1">
+    <#if fList?exists>
+    <#list fList as v>
+    <a href="${context}/video/mvideo_${v.id}.html" target="_blank">
+        <div class="aui-col-xs-6 ysbox2">
+            <div class="imgbox1">
+                <div>
+                    <img src="${context}/bootstrap/image/zwt.png" data-original="${v.vpic}" class="img1"/>
+                </div>
+            </div>
+            <div class="zytxt">${v.vname}</div>
+        </div>
+    </a>
+</
+#list>
+</#if>
+</div>
+
+<div class="navnew ntitle">
+    <img src="${context}/aui/images/common/vd.png" style="height:1rem;width:auto;float:left;"/><span
+        style="">&nbsp;最新视频</span>
+</div>
+
+<div class="aui-row ysbox1" id="videoList">
+    <#if vList?exists>
+    <#list vList as v>
+    <a href="${context}/video/mvideo_${v.id}.html" target="_blank">
+        <div class="aui-col-xs-6 ysbox2">
+            <div class="imgbox1">
+                <div>
+                    <img src="${context}/bootstrap/image/zwt.png" data-original="${v.vpic}" class="img1"/>
+                </div>
+            </div>
+            <div class="zytxt">${v.vname}</div>
+        </div>
+    </a>
+</#list>
+</#if>
+</div>
+
+<div id="btbanner-list"></div>
+
+<@includeNew path="/model/common/mb-footer.html" encoding="UTF-8"> </@includeNew>
+
+</div>
+
+<@includeNew path="/model/common/mb-xfadv.html" encoding="UTF-8"> </@includeNew>
+
+<div class="topxf" id="topxf">
+    <a href="#top"><img src="${context}/aui/images/common/top.png" style="width:100%;"/></a>
+</div>
+
+<script src="${context}/aui/script/jquery.js" type="text/javascript" charset="utf-8"></script>
+<script src="${context}/aui/script/swiper-3.3.1.jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="${context}/aui/script/aui-popup-new.js"></script>
+<script type="text/javascript" src="${context}/bootstrap/js/jquery.lazyload.min.js"></script>
+
+<script type="text/javascript">
+    var popup = new auiPopup();
+
+    $(document).ready(function () {
+
+
+        $(".img1").lazyload({
+            effect: "show"
+            , container: $("#videoList")
+        });
+
+        $(".img1").lazyload({
+            effect: "show"
+            , container: $("#videoList1")
+        });
+
+    <@includeNew
+        path = "/model/common/pc-adjs.html"
+        encoding = "UTF-8" > < /@includeNew>
+
+        $(".aui-content").scroll(function () {
+            if ($(".aui-content").scrollTop() > 100) {
+                $("#topxf").show();
+            } else {
+                $("#topxf").fadeOut(500);
+            }
+        });
+    });
+
+
+    function opmenu() {
+        popup.init({
+            frameBounces: true,
+            location: "top-right",
+            buttons: [{
+                image: '${context}/aui/images/common/index.png',
+                text: '首页',
+                value: 'lt'
+            }, {
+                image: '${context}/aui/images/common/forum.png',
+                text: '论坛',
+                value: 'lt'
+            }
+                /**
+                 ,{
+					image:'',
+					text:'菜单1',
+					value:'cd1'
+				},{
+					image:'',
+					text:'菜单2',
+					value:'cd2'
+				}
+                 **/
+            ],
+        }, function (ret) {
+            if (ret) {
+                if (ret.buttonIndex == 1) {
+                    location.href = "/";
+                } else if (ret.buttonIndex == 2) {
+                    alert("暂未开放");
+                } else if (ret.buttonIndex == 3) {
+                    alert("暂未开放");
+                }
+            }
+        })
+    }
+</script>
+
+</body>
+
+</html>

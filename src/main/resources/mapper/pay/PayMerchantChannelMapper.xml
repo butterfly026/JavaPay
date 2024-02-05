@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd"
+        >
+<mapper namespace="com.city.city_collector.admin.pay.dao.PayMerchantChannelDao">
+    <!--查询分页数据-->
+    <select id="queryPage" parameterType="Map" resultType="Map">
+        select pmc.id id,pmc.`name` `name`,pmc.merchant_id merchantId,su.username merchantNo,su.`name`
+        merchantName,pct.`name` typeName,
+        pmc.merchant_ratio merchantRatio,pmc.proxy_ratio proxyRatio,IFNULL(a.jrdds,0) jrdds,IFNULL(a.jrcg,0) jrcg,
+        case when a.jrdds is null then '0%' else CONCAT(round(a.jrcg/a.jrdds*100,2),'%') end jrcgl,IFNULL(a.dayMoney,0)
+        dayMoney,
+        cs.pname pname,pmc.`status` `status`,a.lastTime lastTime
+        from pay_merchant_channel pmc
+        inner join sys_user su on pmc.merchant_id = su.id
+        left join pay_channel_type pct on pmc.channel_type_id=pct.id
+        left join (
+        select pcmc.merchant_channel_id mcid,
+        <![CDATA[ GROUP_CONCAT(su.username,'(',pcc.`name`,')[<span style="color:red;">',pcmc.priority,'</span>]',case when su.status=0 then   '<span style="color:red;">[上游禁用]</span>'  when pcc.status=0 then  '<span style="color:red;">[通道禁用]</span>'  else '' end ) pname ]]>
+        ,CONCAT(',',GROUP_CONCAT(pcc.id),',') pids
+        from pay_client_merchant_channel pcmc
+        inner join pay_client_channel pcc on pcmc.client_channel_id=pcc.id
+        inner join sys_user su on pcc.client_id=su.id
+        where pcc.del=0
+        group by pcmc.merchant_channel_id
+        ) cs on pmc.id=cs.mcid
+
+        left join (
+        select merchant_channel_id merchantChannelId,count(1) jrdds,sum(case when po.order_status=1 then 1 else 0 end)
+        jrcg
+        ,sum(case when po.order_status=1 then money else 0 end) dayMoney,max(po.CREATE_TIME) lastTime
+        from pay_order po
+        <![CDATA[ where id>=(select min(id) from pay_order where CREATE_TIME  >=  CURRENT_DATE) and xnorder=0 ]]>
+        GROUP BY merchant_channel_id
+        ) a on a.merchantChannelId=pmc.id
+
+        where pmc.del=0
+
+        <if test="name !=null and name !=''">
+            and su.`name` like "%"#{name}"%"
+        </if>
+
+        <if test="merchantId !=null and merchantId !=''">
+            and pmc.merchant_id=#{merchantId}
+        </if>
+
+        <if test="clientId !=null and clientId !=''">
+            and locate(concat(',',#{clientId},','),cs.pids)>0
+        </if>
+
+        <if test="channelTypeId !=null  and channelTypeId !=''">
+            and pmc.channel_type_id=#{channelTypeId}
+        </if>
+
+        <if test="status !=null and status !=''">
+            and pmc.`status`=#{status}
+        </if>
+
+        <if test='jyl !=null and jyl == "1"'>
+            and a.`jrdds` <![CDATA[  >  ]]> 0
+        </if>
+
+        <if test='jyl !=null and jyl == "0"'>
+            and ( a.`jrdds` is null or a.`jrdds` <![CDATA[  <=  ]]> 0 )
+        </if>
+
+        <if test="orderby !=null and orderby !=''">
+            order by ${orderby}
+        </if>
+
+        <if test="orderby ==null">
+            order by pmc.CREATE_TIME desc
+        </if>
+
+        limit #{start},#{end}
+    </select>
+    <!--查询总体记录数-->
+    <select id="queryCount" parameterType="Map" resultType="int">
+        SELECT count(1) count
+        from pay_merchant_channel pmc
+        inner join sys_user su on pmc.merchant_id = su.id
+        left join pay_channel_type pct on pmc.channel_type_id=pct.id
+        left join (
+        select pcmc.merchant_channel_id mcid,
+        GROUP_CONCAT(su.username,'(',pcc.`name`,')',case when su.status=0 then
+        <![CDATA[  '<span style="color:red;">[上游禁用]</span>'  ]]> when pcc.status=0 then
+        <![CDATA[  '<span style="color:red;">[通道禁用]</span>'  ]]> else '' end ) pname
+        ,CONCAT(',',GROUP_CONCAT(pcc.id),',') pids
+        from pay_client_merchant_channel pcmc
+        inner join pay_client_channel pcc on pcmc.client_channel_id=pcc.id
+        inner join sys_user su on pcc.client_id=su.id
+        where pcc.del=0
+        group by pcmc.merchant_channel_id
+        ) cs on pmc.id=cs.mcid
+
+        left join (
+        select merchant_channel_id merchantChannelId,count(1) jrdds,sum(case when po.order_status=1 then 1 else 0 end)
+        jrcg
+        ,sum(case when po.order_status=1 then money else 0 end) dayMoney,max(po.CREATE_TIME) lastTime
+        from pay_order po
+        <![CDATA[ where id>=(select min(id) from pay_order where CREATE_TIME  >=  CURRENT_DATE) and xnorder=0 ]]>
+        GROUP BY merchant_channel_id
+        ) a on a.merchantChannelId=pmc.id
+
+        where pmc.del=0
+
+        <if test="name !=null and name !=''">
+            and su.`name` like "%"#{name}"%"
+        </if>
+
+        <if test="merchantId !=null and merchantId !=''">
+            and pmc.merchant_id=#{merchantId}
+        </if>
+
+        <if test="clientId !=null and clientId !=''">
+            and locate(concat(',',#{clientId},','),cs.pids)>0
+        </if>
+
+        <if test="channelTypeId !=null  and channelTypeId !=''">
+            and pmc.channel_type_id=#{channelTypeId}
+        </if>
+
+        <if test="status !=null and status !=''">
+            and pmc.`status`=#{status}
+        </if>
+
+        <if test='jyl !=null and jyl == "1"'>
+            and a.`jrdds` <![CDATA[  >  ]]> 0
+        </if>
+
+        <if test='jyl !=null and jyl == "0"'>
+            and ( a.`jrdds` is null or a.`jrdds` <![CDATA[  <=  ]]> 0 )
+        </if>
+
+    </select>
+    <!--添加记录-->
+    <insert id="addSave" parameterType="com.city.city_collector.admin.pay.entity.PayMerchantChannel"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into
+        pay_merchant_channel(`name`,merchant_id,merchant_ratio,channel_type_id,proxy_ratio,`status`,jrcg,jrcgl,lscg,lscgl,useChannelPayurl)
+        value(#{name},#{merchantId},#{merchantRatio},#{channelTypeId},#{proxyRatio},#{status},#{jrcg},#{jrcgl},#{lscg},#{lscgl},#{useChannelPayurl})
+    </insert>
+    <!--查询单条记录-->
+    <select id="querySingle" parameterType="Map"
+            resultType="com.city.city_collector.admin.pay.entity.PayMerchantChannel">
+        select id,`name`,merchant_id merchantId,merchant_ratio merchantRatio,channel_type_id channelTypeId,proxy_ratio
+        proxyRatio,`status`,jrcg,jrcgl,lscg,lscgl,useChannelPayurl
+        from pay_merchant_channel where id=#{id} and del=0
+    </select>
+
+    <select id="querySingleByMerchantId" parameterType="Map"
+            resultType="com.city.city_collector.admin.pay.entity.PayMerchantChannel">
+        select id,`name`,merchant_id merchantId,merchant_ratio merchantRatio,channel_type_id channelTypeId,proxy_ratio
+        proxyRatio,`status`,jrcg,jrcgl,lscg,lscgl,useChannelPayurl
+        from pay_merchant_channel where del=0
+        <if test="id !=null">
+            and id=#{id}
+        </if>
+        <if test="channelTypeId !=null">
+            and channel_type_id=#{channelTypeId}
+        </if>
+        <if test="merchantId !=null">
+            and merchant_id=#{merchantId}
+        </if>
+    </select>
+    <!--编辑数据-->
+    <update id="editSave" parameterType="com.city.city_collector.admin.pay.entity.PayMerchantChannel">
+        update pay_merchant_channel
+        set
+        `name`=#{name},
+        merchant_ratio=#{merchantRatio},
+        proxy_ratio=#{proxyRatio},
+        `status`=#{status},
+        useChannelPayurl=#{useChannelPayurl}
+
+        where id=#{id} and del=0
+    </update>
+
+    <update id="updateStatus" parameterType="Map">
+        update pay_merchant_channel
+        set status=#{status}
+        where id=#{id} and del=0
+    </update>
+    <!--删除数据-->
+    <delete id="delete" parameterType="java.lang.String">
+        update pay_merchant_channel
+        set del=1
+        where id in (${_parameter})
+    </delete>
+
+    <!-- 查询用户已添加的上游通道 -->
+    <select id="queryMerchantClientIds" parameterType="java.lang.Long" resultType="java.lang.String">
+        select GROUP_CONCAT(client_channel_id)
+        from pay_client_merchant_channel
+        where merchant_channel_id=#{id}
+        group by merchant_channel_id
+    </select>
+
+    <select id="queryClientChannelList" parameterType="java.lang.Long" resultType="Map">
+        select pcc.id id,pcc.`name` `name`,su.username clientNo,su.`name` clientName,pct.`name`
+        typeName,CONCAT(pcc.ratio,'%') ratio
+        ,case when su.status=0 then <![CDATA[ '<span style="color:red;">[上游已禁用]</span>'  ]]> when pcc.status=0 then
+        <![CDATA[ '<span style="color:red;">[通道已禁用]</span>' ]]>  else '' end info
+        ,IFNULL(pcmc.priority,0) priority
+        from pay_client_channel pcc
+        inner join sys_user su on pcc.client_id=su.id
+        inner join pay_channel_type pct on pcc.channel_type_id=pct.ID
+        inner join pay_merchant_channel pmc on pcc.channel_type_id=pmc.channel_type_id
+        left join pay_client_merchant_channel pcmc on pcmc.client_channel_id=pcc.id and pcmc.merchant_channel_id=pmc.id
+        where pmc.id=#{id} and pcc.del=0
+        <!--
+            select pcc.id id,pcc.`name` `name`,su.username clientNo,su.`name` clientName,pct.`name` typeName,CONCAT(pcc.ratio,'%') ratio
+                    ,case when su.status=0 then <![CDATA[  '<span style="color:red;">[上游已禁用]</span>'  ]]> when pcc.status=0 then <![CDATA[  '<span style="color:red;">[通道已禁用]</span>'  ]]> else '' end info
+                    ,IFNULL(pcmc.priority,0) priority
+            from pay_client_channel pcc
+            inner join sys_user su on pcc.client_id=su.id
+            inner join pay_channel_type pct on pcc.channel_type_id=pct.ID
+            left join pay_client_merchant_channel pcmc on pcmc.client_channel_id=pcc.id
+            where pcc.channel_type_id=(
+            select channel_type_id from pay_merchant_channel where id=#{id}
+            ) and pcc.del=0
+        -->
+    </select>
+
+    <delete id="deleteMerchantChannel" parameterType="java.lang.Long">
+        delete from pay_client_merchant_channel where merchant_channel_id=#{id}
+    </delete>
+
+    <insert id="addSaveMerchantChannel" parameterType="java.util.List">
+        insert into pay_client_merchant_channel(client_channel_id,merchant_channel_id,priority)
+        values
+        <foreach collection="list" item="pojo" index="index" separator=",">
+            (#{pojo.clientChannelId},#{pojo.merchantChannelId},#{pojo.priority})
+        </foreach>
+    </insert>
+
+    <select id="querySelectList" parameterType="Map" resultType="com.city.city_collector.admin.system.entity.SysUser">
+        select pmc.`id` `id`, su.`username` `username`, su.`name` `nickname`, pmc.`name` `name`
+        from pay_merchant_channel pmc
+        inner join sys_user su on pmc.merchant_id=su.id
+        where pmc.del=0
+        order by su.username asc
+    </select>
+
+    <update id="updateChannelDataStatus" parameterType="Map">
+        update pay_merchant_channel
+        set status=#{status}
+        where id in (${ids}) and del=0
+    </update>
+
+
+    <select id="queryPayMerchantChannelByIds" parameterType="java.lang.String" resultType="com.city.city_collector.admin.pay.entity.PayMerchantChannel">
+        select ID id, name name, merchant_id merchantId,merchant_no merchantNo, merchant_ratio merchantRatio
+        from pay_merchant_channel
+        where id in (${_parameter})
+    </select>
+
+</mapper>

@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: admin
+  resources:
+    static-locations: classpath:static/,file:D:\springboot\page\,file:/usr/local/docker/springboot/
+  datasource:
+    druid:
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 300
+
+#服务配置
+server:
+  port: 80
+  tomcat:
+    uri-encoding: UTF-8
+    max-threads: 1000
+    max-connections: 5000
+    max-http-post-size: -1
+    max-http-header-size: 8096
+  servlet:
+    session:
+      cookie:
+        http-only: true
+#        secure: true
+
+#mybatis
+mybatis:
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  type-aliases-package: com.city.city_collector.admin.system.entity,com.city.city_collector.admin.city.entity
+  mapper-locations:
+    - classpath:mapper/*/*.xml

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd"
+        >
+<mapper namespace="com.city.city_collector.admin.pay.dao.PayLogDao">
+    <!--查询分页数据-->
+    <select id="queryPage" parameterType="Map" resultType="Map">
+        SELECT id,CREATE_TIME createTime,type,user_name userName,sn,descript,sn_type snType
+        from pay_log
+        <where>
+
+            <if test="type !=null and type !=''">
+                and type=#{type}
+            </if>
+
+            <if test="snType !=null and snType !=''">
+                and sn_type=#{snType}
+            </if>
+
+            <if test="sn !=null and sn !=''">
+                and sn like "%"#{sn}"%"
+            </if>
+
+        </where>
+
+        <if test="orderby !=null and orderby !=''">
+            order by ${orderby}
+        </if>
+        <if test="orderby ==null">
+            order by CREATE_TIME desc
+        </if>
+
+        limit #{start},#{end}
+    </select>
+    <!--查询总体记录数-->
+    <select id="queryCount" parameterType="Map" resultType="int">
+        SELECT count(1) count
+        from pay_log
+        <where>
+
+            <if test="type !=null and type !=''">
+                and type=#{type}
+            </if>
+
+            <if test="snType !=null and snType !=''">
+                and sn_type=#{snType}
+            </if>
+
+            <if test="sn !=null and sn !=''">
+                and sn like "%"#{sn}"%"
+            </if>
+
+        </where>
+    </select>
+    <!--添加记录-->
+    <insert id="addSave" parameterType="com.city.city_collector.admin.pay.entity.PayLog" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into
+        pay_log(type,user_id,user_name,sn,sn_type,descript,request_data,response_data,client_id,client_channel_id,merchant_id,merchant_channel_id)
+        value(#{type},#{userId},#{userName},#{sn},#{snType},#{descript},#{requestData},#{responseData},#{clientId},#{clientChannelId},#{merchantId},#{merchantChannelId})
+    </insert>
+    <!--查询单条记录-->
+    <select id="querySingle" parameterType="Map" resultType="com.city.city_collector.admin.pay.entity.PayLog">
+        select id,CREATE_TIME createTime,type,user_name userName,sn,descript,sn_type snType
+        from pay_log where id=#{id}
+    </select>
+
+    <select id="queryDetail" parameterType="Map" resultType="Map">
+        select pl.id id,pl.CREATE_TIME createTime,pl.type type,pl.user_name userName,pl.sn sn,pl.sn_type snType,
+        pl.descript descript,pl.request_data requestData,pl.response_data responseData,
+        client.username clientNo,client.`name` clientName,
+        merchant.username merchantNo,merchant.`name` merchantName,
+        pcc.`name` clientChannelName,pmc.`name` merchantChannelName
+        from pay_log pl
+        left join sys_user client on pl.client_id=client.id
+        left join sys_user merchant on pl.merchant_id=merchant.id
+        left join pay_client_channel pcc on pl.client_channel_id=pcc.id
+        left join pay_merchant_channel pmc on pl.merchant_channel_id=pmc.id
+        where pl.id=#{id}
+    </select>
+
+    <!--编辑数据-->
+    <update id="editSave" parameterType="com.city.city_collector.admin.pay.entity.PayLog">
+        update pay_log
+        <set>
+            <!--
+                <if test="paramgroup_id !=null and paramgroup_id !=''">
+                      paramgroup_id=#{paramgroup_id},
+                  </if>
+                -->
+
+        </set>
+        where id=#{id}
+    </update>
+
+    <!--删除数据-->
+    <delete id="delete" parameterType="java.lang.String">
+        delete from pay_log where id in (${_parameter})
+    </delete>
+
+    <select id="truncateLogTable" parameterType="Map">
+--         truncate table pay_log
+    </select>
+
+    <insert id="addPayOrderAccess">
+        insert into pay_order_access(CREATE_TIME) value(SYSDATE())
+    </insert>
+
+
+    <!--查询分页数据-->
+    <select id="querySensitiveLogPage" parameterType="Map" resultType="Map">
+        SELECT user_id userId ,username,time,opt_type optType, opt_content optContent,link_content linkContent,ip
+        from pay_sensitive_log
+        <where>
+
+            <if test="optType !=null and optType !=''">
+                and opt_type=#{optType}
+            </if>
+
+        </where>
+
+        <if test="orderby !=null and orderby !=''">
+            order by ${orderby}
+        </if>
+        <if test="orderby ==null">
+            order by time desc
+        </if>
+
+        limit #{start},#{end}
+    </select>
+    <!--查询总体记录数-->
+    <select id="querySensitiveLogCount" parameterType="Map" resultType="int">
+        SELECT count(1) count
+        from pay_sensitive_log
+        <where>
+
+            <if test="optType !=null and optType !=''">
+                and opt_type=#{optType}
+            </if>
+
+        </where>
+    </select>
+
+    <insert id="insertSensitiveLog" parameterType="com.city.city_collector.admin.pay.entity.PaySensitiveLog">
+        insert into pay_sensitive_log values
+        (#{userId},#{username},#{time},#{optType},#{optContent},#{linkContent},#{ip})
+    </insert>
+
+</mapper>

@@ -1,0 +1,284 @@
+/*---滚动条默认显示样式--*/
+::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    height: 10px;
+    outline-offset: -2px;
+    outline: 2px solid transparent;
+    -webkit-border-radius: 4px;
+    border: 2px solid transparent;
+}
+
+
+/*---鼠标点击滚动条显示样式--*/
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: transparent;
+    height: 10px;
+    -webkit-border-radius: 4px;
+}
+
+
+/*---滚动条大小--*/
+
+::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+    display: none;
+}
+
+
+/*---滚动框背景样式--*/
+
+::-webkit-scrollbar-track-piece {
+    background-color: transparent;
+    -webkit-border-radius: 0;
+}
+
+html, body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.aui-bar-nav {
+    background-color: initial;
+}
+
+.aui-bar-nav .aui-btn .aui-iconfont {
+    color: #FFFFFF;
+    background: -webkit-linear-gradient(left, rgba(61, 151, 239, 1), rgba(61, 151, 239, 0.9)); /* Safari 5.1 - 6.0 */
+    background: -o-linear-gradient(right, rgba(61, 151, 239, 1), rgba(61, 151, 239, 0.9)); /* Opera 11.1 - 12.0 */
+    background: -moz-linear-gradient(right, rgba(61, 151, 239, 1), rgba(61, 151, 239, 0.9)); /* Firefox 3.6 - 15 */
+    background: linear-gradient(to right, rgba(61, 151, 239, 1), rgba(61, 151, 239, 0.9)); /* 标准的语法（必须放在最后） */
+}
+
+.aui-bar {
+    font-size: 0.8rem;
+    position: fixed;
+    color: #FFFFFF;
+    background: -webkit-linear-gradient(left, rgba(61, 151, 239, 1), rgba(61, 151, 239, 0.9)); /* Safari 5.1 - 6.0 */
+    background: -o-linear-gradient(right, rgba(61, 151, 239, 1), rgba(61, 151, 239, 0.9)); /* Opera 11.1 - 12.0 */
+    background: -moz-linear-gradient(right, rgba(61, 151, 239, 1), rgba(61, 151, 239, 0.9)); /* Firefox 3.6 - 15 */
+    background: linear-gradient(to right, rgba(61, 151, 239, 1), rgba(61, 151, 239, 0.9)); /* 标准的语法（必须放在最后） */
+}
+
+.aui-content {
+    background-color: #FFFFFF;
+    margin: 0;
+    height: 100%;
+    padding-top: 2.25rem;
+
+}
+
+.common-fontcolor {
+    color: #00BC62;
+}
+
+.aui-popup-top-right {
+    top: 2.25rem;
+}
+
+.lmbox {
+    padding: 5px;
+    font-size: 0.7rem;
+    text-align: center;
+}
+
+.lmbox > a {
+    color: #000000;
+}
+
+.swiper-container1 {
+    margin-top: 10px;
+}
+
+.bimg {
+    width: 100%;
+    height: 5rem;
+}
+
+.bimg1 {
+    width: 100%;
+    height: auto;
+}
+
+#banner-list {
+    margin-top: 10px;
+}
+
+#btbanner-list {
+    margin-top: 10px;
+}
+
+.navnew {
+    background: -webkit-linear-gradient(left, rgba(61, 151, 239, 1), rgba(61, 151, 239, 0.9)); /* Safari 5.1 - 6.0 */
+    background: -o-linear-gradient(right, rgba(61, 151, 239, 1), rgba(61, 151, 239, 0.9)); /* Opera 11.1 - 12.0 */
+    background: -moz-linear-gradient(right, rgba(61, 151, 239, 1), rgba(61, 151, 239, 0.9)); /* Firefox 3.6 - 15 */
+    background: linear-gradient(to right, rgba(61, 151, 239, 1), rgba(61, 151, 239, 0.9)); /* 标准的语法（必须放在最后） */
+}
+
+.ntitle {
+    width: 100%;
+    margin-top: 10px;
+    color: #FFFFFF;
+    padding: 5px;
+    font-size: 0.65rem;
+    font-weight: bold;
+}
+
+
+.zytxt {
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    padding-top: 5px;
+    word-break: keep-all;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #000000;
+}
+
+.imgbox1 {
+    width: 100%;
+    height: 0;
+    padding-bottom: 55%;
+    overflow: hidden;
+    position: relative;
+    /**background-color: lightgray;**/
+}
+
+.imgbox1 > div {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.imgbox1 > div img {
+    width: 100%;
+
+    height: 100%;
+
+/ / max-width: 100 %;
+
+/ / max-height: 100 %;
+}
+
+.imgbox1 > div .txt {
+    position: absolute;
+    left: 5px;
+    bottom: 5px;
+    color: #FFFFFF;
+    font-size: 10pt;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 2px;
+    padding-bottom: 3px;
+    border-radius: 12px;
+    word-break: keep-all;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90%;
+}
+
+.ysbox1 {
+    margin-right: 2.5px;
+    margin-left: 2.5px;
+}
+
+.ysbox2 {
+    padding-left: 2.5px;
+    padding-right: 2.5px;
+    padding-top: 5px;
+}
+
+.footertxt {
+    text-align: center;
+    background-color: #444444;
+    color: #FFFFFF;
+    font-size: 0.65rem;
+    font-weight: bold;
+    padding: 10px;
+    margin-top: 20px;
+}
+
+.columnnav {
+    padding-left: 5px;
+    padding-top: 5px;
+    font-size: 0.6rem;
+    color: #6b6b6b;
+}
+
+.columnnav a {
+    color: #6b6b6b;
+}
+
+.selcolor {
+    color: #6b6b6b;
+}
+
+.lmbox {
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
+    font-size: 0.7rem;
+    text-align: center;
+}
+
+.lmbox > a {
+    color: #C1D9F7;
+}
+
+.columnbg {
+    background-color: #3D98F0;
+}
+
+.selcolumn {
+    border-bottom: 1.5px solid #FFFFFF;
+}
+
+.columnjx {
+    height: 1px;
+    background-color: #5DABF0;
+    width: 100%;
+}
+
+.leftxf {
+    z-index: 9999;
+    position: fixed;
+    width: 3rem;
+    left: 0px;
+    top: 30%;
+    display: none;
+}
+
+.rightxf {
+    z-index: 9999;
+    position: fixed;
+    width: 3rem;
+    right: 0px;
+    top: 30%;
+    display: none;
+}
+
+.xfbtn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 0.8rem;
+    height: 0.8rem;
+}
+
+.topxf {
+    z-index: 9999;
+    position: fixed;
+    width: 1rem;
+    right: 10px;
+    bottom: 10%;
+    display: none;
+}

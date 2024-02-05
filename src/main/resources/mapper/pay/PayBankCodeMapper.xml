@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd"
+        >
+<mapper namespace="com.city.city_collector.admin.pay.dao.PayBankCodeDao">
+    <!--查询分页数据-->
+    <select id="queryPage" parameterType="Map" resultType="Map">
+        SELECT id,`code`,`name`
+        from pay_bank_code
+        <where>
+
+            <if test="code !=null and code !=''">
+                and `code` like "%"#{code}"%"
+            </if>
+            <if test="name !=null and name !=''">
+                and `name` like "%"#{name}"%"
+            </if>
+        </where>
+        <if test="orderby !=null and orderby !=''">
+            order by ${orderby}
+        </if>
+        <if test="orderby ==null">
+            order by UPDATE_TIME desc
+        </if>
+        limit #{start},#{end}
+    </select>
+    <!--查询总体记录数-->
+    <select id="queryCount" parameterType="Map" resultType="int">
+        SELECT count(1) count
+        from pay_bank_code
+        <where>
+
+            <if test="code !=null and code !=''">
+                and `code` like "%"#{code}"%"
+            </if>
+            <if test="name !=null and name !=''">
+                and `name` like "%"#{name}"%"
+            </if>
+        </where>
+    </select>
+    <!--添加记录-->
+    <insert id="addSave" parameterType="com.city.city_collector.admin.pay.entity.PayBankCode" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into pay_bank_code(`code`,`name`)
+        value(#{code},#{name})
+    </insert>
+    <!--查询单条记录-->
+    <select id="querySingle" parameterType="Map" resultType="com.city.city_collector.admin.pay.entity.PayBankCode">
+        select id,`code`,`name`
+        from pay_bank_code
+        <where>
+            <if test="id !=null and id !=''">
+                and id=#{id}
+            </if>
+            <if test="code !=null and code !=''">
+                and `code`=#{code}
+            </if>
+            <if test="name !=null and name !=''">
+                and `name`=#{name}
+            </if>
+        </where>
+        limit 1
+    </select>
+
+    <!-- 查询所有数据 -->
+    <select id="queryAllList" parameterType="Map" resultType="com.city.city_collector.admin.pay.entity.PayBankCode">
+        select id,`code`,`name`
+        from pay_bank_code
+    </select>
+    <!--编辑数据-->
+    <update id="editSave" parameterType="com.city.city_collector.admin.pay.entity.PayBankCode">
+        update pay_bank_code
+        set `code`=#{code},`name`=#{name}
+        where id=#{id}
+    </update>
+
+    <!--删除数据-->
+    <delete id="delete" parameterType="java.lang.String">
+        delete from pay_bank_code where id in (${_parameter})
+    </delete>
+</mapper>

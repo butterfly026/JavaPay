@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd"
+        >
+<mapper namespace="com.city.city_collector.admin.pay.dao.PayClientChannelDao">
+    <!--查询分页数据-->
+    <select id="queryPage" parameterType="Map" resultType="Map">
+        select pcc.id id,pcc.`name` `name`,pcc.client_id clientId,su.username clientNo,su.`name` clientName,pct.`name`
+        typeName,
+        pcc.start_time startTime,pcc.end_time endTime,pcc.min_money minMoney,pcc.max_money maxMoney,pcc.money
+        money,pcc.mtype mtype,
+        pcc.ratio ratio,pcc.`status` `status`,IFNULL(a.jrdds,0) jrdds,IFNULL(a.jrcg,0) jrcg,
+        case when a.jrdds is null then '0%' else CONCAT(round(a.jrcg/a.jrdds*100,2),'%') end jrcgl,IFNULL(a.dayMoney,0)
+        dayMoney,
+        pcc.gtype gtype,pcc.keyname keyname,pcc.paytmid paytmid,pcc.alarm alarm,pcc.alarm_number
+        alarmNumber,pcc.alarm_numberup alarmNumberup,pcc.primary_platform primaryPlatform,pcc.retry_number retryNumber
+        from pay_client_channel pcc
+        inner join sys_user su on pcc.client_id = su.id
+        left join pay_channel_type pct on pcc.channel_type_id=pct.id
+
+        left join (
+        select client_channel_id clientChannelId,count(1) jrdds,sum(case when po.order_status=1 then 1 else 0 end) jrcg
+        ,sum(case when po.order_status=1 then money else 0 end) dayMoney
+        from pay_order po
+        <![CDATA[ where id  >= (select min(id) from pay_order where CREATE_TIME >=  CURRENT_DATE) ]]>
+        GROUP BY client_channel_id
+        ) a on a.clientChannelId=pcc.id
+
+        where pcc.del=0
+        <if test="name !=null and name !=''">
+            and pcc.`name` like "%"#{name}"%"
+        </if>
+
+        <if test="clientId !=null and clientId !=''">
+            and pcc.client_id=#{clientId}
+        </if>
+
+        <if test="channelTypeId !=null  and channelTypeId !=''">
+            and pcc.channel_type_id=#{channelTypeId}
+        </if>
+
+        <if test="mtype !=null and mtype !=''">
+            and pcc.mtype=#{mtype}
+        </if>
+
+        <if test="status !=null and status !=''">
+            and pcc.`status`=#{status}
+        </if>
+
+        <if test="ctype !=null">
+            and pcc.`ctype`=#{ctype}
+        </if>
+
+        <if test="paytmid !=null and paytmid !=''">
+            and pcc.`paytmid` like "%"#{paytmid}"%"
+        </if>
+
+
+        <if test="orderby !=null and orderby !=''">
+            order by ${orderby}
+        </if>
+        <if test="orderby ==null">
+            order by pcc.CREATE_TIME desc
+        </if>
+
+        limit #{start},#{end}
+    </select>
+    <!--查询总体记录数-->
+    <select id="queryCount" parameterType="Map" resultType="int">
+        SELECT count(1) count
+        from pay_client_channel pcc
+        inner join sys_user su on pcc.client_id = su.id
+        left join pay_channel_type pct on pcc.channel_type_id=pct.id
+        where pcc.del=0
+        <if test="name !=null and name !=''">
+            and pcc.`name` like "%"#{name}"%"
+        </if>
+
+        <if test="clientId !=null and clientId !=''">
+            and pcc.client_id=#{clientId}
+        </if>
+
+        <if test="channelTypeId !=null  and channelTypeId !=''">
+            and pcc.channel_type_id=#{channelTypeId}
+        </if>
+
+        <if test="mtype !=null and mtype !=''">
+            and pcc.mtype=#{mtype}
+        </if>
+
+        <if test="status !=null and status !=''">
+            and pcc.`status`=#{status}
+        </if>
+
+        <if test="ctype !=null">
+            and pcc.`ctype`=#{ctype}
+        </if>
+
+        <if test="paytmid !=null and paytmid !=''">
+            and pcc.`paytmid` like "%"#{paytmid}"%"
+        </if>
+
+    </select>
+    <!--添加记录-->
+    <insert id="addSave" parameterType="com.city.city_collector.admin.pay.entity.PayClientChannel"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into
+        pay_client_channel(`name`,client_id,client_no,client_name,channel_type_id,start_time,end_time,min_money,max_money,money,mtype,ratio,`status`,day_money,jrcg,jrcgl,jrdds,lscg,lscgl,keyname,gtype,params,descript,ctype,paytmid,paytmkey,paytmmd5,paytmuid,alarm,alarm_number,alarm_numberup,primary_platform,retry_number)
+        value(#{name},#{clientId},'','',#{channelTypeId},#{startTime},#{endTime},#{minMoney},#{maxMoney},#{money},#{mtype},#{ratio},#{status},#{dayMoney},#{jrcg},#{jrcgl},#{jrdds},#{lscg},#{lscgl},#{keyname},#{gtype},#{params},#{descript},#{ctype},#{paytmid},#{paytmkey},#{paytmmd5},#{paytmuid},#{alarm},#{alarmNumber},#{alarmNumberup},#{primaryPlatform},#{retryNumber})
+    </insert>
+    <!--查询单条记录-->
+    <select id="querySingle" parameterType="Map" resultType="com.city.city_collector.admin.pay.entity.PayClientChannel">
+        select id,`name`,client_id clientId,client_no clientNo,client_name clientName,channel_type_id
+        channelTypeId,start_time startTime,end_time endTime,min_money minMoney,max_money maxMoney,money,mtype,ratio,
+        `status`,day_money
+        dayMoney,jrcg,jrcgl,jrdds,lscg,lscgl,keyname,gtype,params,descript,ctype,paytmid,paytmkey,paytmmd5,paytmuid,alarm,alarm_number
+        alarmNumber,alarm_numberup alarmNumberup,
+        primary_platform primaryPlatform,retry_number retryNumber
+        from pay_client_channel where id=#{id} and del=0
+    </select>
+
+    <!--查询通道详情-->
+    <select id="queryDetail" parameterType="Map" resultType="Map">
+        select pcc.id id,pcc.`name` `name`,su.username clientNo,su.`name` clientName,pct.`name` typeName,pcc.start_time
+        startTime,
+        pcc.end_time endTime,pcc.min_money minMoney,pcc.max_money maxMoney,pcc.money money,mtype,ratio,
+        pcc.`status` `status`,keyname,su.gotype gotype,params,pcc.descript descript,pcc.paytmid
+        paytmid,pcc.alarm,pcc.alarm_number alarmNumber,pcc.alarm_numberup alarmNumberup,
+        pcc.primary_platform primaryPlatform,pcc.retry_number retryNumber
+        from pay_client_channel pcc
+        inner join sys_user su on pcc.client_id=su.id
+        inner join pay_channel_type pct on pcc.channel_type_id=pct.id
+        where pcc.id=#{id} and pcc.del=0
+    </select>
+
+
+    <select id="querySelectList" parameterType="Map" resultType="Map">
+        select pcc.id id,su.username username,pcc.`name` `name`
+        from pay_client_channel pcc
+        inner join sys_user su on pcc.client_id=su.id
+        where pcc.del=0
+        order by su.username asc
+    </select>
+
+    <select id="querySelectListByIds" parameterType="java.lang.String" resultType="com.city.city_collector.admin.pay.entity.PayClientChannel">
+        select ID id, name name, client_id clientId, client_name clientName, ratio ratio
+        from pay_client_channel
+        where id in (${_parameter})
+    </select>
+
+    <select id="querySelectListTest" parameterType="Map"
+            resultType="com.city.city_collector.admin.system.entity.SysUser">
+        select pcc.id id,su.username username,pcc.`name` `name`
+        from pay_client_channel pcc
+        inner join sys_user su on pcc.client_id=su.id
+        inner join pay_client_model pcm on pcc.keyname=pcm.keyname
+        where pcc.del=0 and pcm.`status`=1 and pcm.test_status=1
+        order by su.username asc
+    </select>
+
+    <select id="querySelectListTestPaytm" parameterType="Map"
+            resultType="com.city.city_collector.admin.system.entity.SysUser">
+        select pcc.id id,su.username username,pcc.`name` `name`
+        from pay_client_channel pcc
+        inner join sys_user su on pcc.client_id=su.id
+        where pcc.del=0 and pcc.ctype=1
+        order by su.username asc
+    </select>
+
+    <!--编辑数据-->
+    <update id="editSave" parameterType="com.city.city_collector.admin.pay.entity.PayClientChannel">
+        update pay_client_channel
+        set name=#{name},
+        start_time=#{startTime},
+        end_time=#{endTime},
+        min_money=#{minMoney},
+        max_money=#{maxMoney},
+        money=#{money},
+        mtype=#{mtype},
+        ratio=#{ratio},
+        `status`=#{status},
+        keyname=#{keyname},
+        gtype=#{gtype}
+        ,params=#{params}
+        ,descript=#{descript}
+        ,ctype=#{ctype}
+        ,paytmid=#{paytmid}
+        ,paytmkey=#{paytmkey}
+        ,paytmmd5=#{paytmmd5}
+        ,paytmuid=#{paytmuid}
+        ,alarm=#{alarm}
+        ,alarm_number=#{alarmNumber}
+        ,alarm_numberup=#{alarmNumberup}
+        ,primary_platform=#{primaryPlatform}
+        ,retry_number=#{retryNumber}
+        where id=#{id} and del=0
+    </update>
+
+    <update id="updateStatus" parameterType="Map">
+        update pay_client_channel
+        set status=#{status}
+        where id=#{id} and del=0
+    </update>
+    <!--删除数据-->
+    <delete id="delete" parameterType="java.lang.String">
+        update pay_client_channel
+        set del=1
+        where id in (${_parameter})
+    </delete>
+
+    <select id="queryIndexEcharts" resultType="Map">
+        select pcc.`name` `name`,sum(po.money) money
+        from pay_order po
+        inner join pay_client_channel pcc on pcc.id=po.client_channel_id
+        <![CDATA[ where po.id>=(select min(id) from pay_order where CREATE_TIME  >=  CURRENT_DATE) ]]>
+        and order_status=1
+        GROUP BY pcc.id,pcc.`name`
+    </select>
+
+    <!-- 更新预警状态 -->
+    <update id="updateAlarmStatus" parameterType="Map">
+        update pay_client_channel
+        set alarm=#{alarm}
+        where id=#{id} and del=0
+    </update>
+
+    <!-- 批量更新通道状态 -->
+    <update id="updateChannelDataStatus" parameterType="Map">
+        update pay_client_channel
+        set status=#{status}
+        where id in (${ids}) and del=0
+    </update>
+
+    <!--编辑预警设置-->
+    <update id="editYjSave" parameterType="com.city.city_collector.admin.pay.entity.PayClientChannel">
+        update pay_client_channel
+        set name=#{name}
+        ,alarm=#{alarm}
+        ,alarm_number=#{alarmNumber}
+        ,alarm_numberup=#{alarmNumberup}
+        where id=#{id} and del=0
+    </update>
+
+    <!-- 查询商户通道列表 -->
+    <select id="queryMerchantChannelList" parameterType="java.lang.Long" resultType="Map">
+        select pmc.id id,pmc.`name` `name`,merchant.username merchantNo,merchant.`name` merchantName,pct.`name`
+        typeName,CONCAT(pcc.ratio,'%') ratio,
+        CONCAT(pmc.merchant_ratio,'%') merchantRatio
+        ,case when merchant.status=0 then <![CDATA[ '<span style="color:red;">[商户已禁用]</span>' ]]>  when
+        merchant.status=0 then <![CDATA[ '<span style="color:red;">[通道已禁用]</span>' ]]>  else '' end info
+        ,IFNULL(pcmc.priority,0) priority
+        from pay_merchant_channel pmc
+        inner join sys_user merchant on pmc.merchant_id=merchant.id
+        inner join pay_channel_type pct on pmc.channel_type_id=pct.ID
+        inner join pay_client_channel pcc on pcc.channel_type_id=pmc.channel_type_id
+        left join pay_client_merchant_channel pcmc on pcmc.client_channel_id=pcc.id and pcmc.merchant_channel_id=pmc.id
+        where pcc.id=#{id} and pmc.del=0
+        order by merchant.`name` asc
+    </select>
+
+    <!-- 查询用户已添加的商户通道 -->
+    <select id="queryClientMerchantIds" parameterType="java.lang.Long" resultType="java.lang.String">
+        select GROUP_CONCAT(merchant_channel_id)
+        from pay_client_merchant_channel
+        where client_channel_id=#{id}
+        group by client_channel_id
+    </select>
+
+    <delete id="deleteClientChannel" parameterType="java.lang.Long">
+        delete from pay_client_merchant_channel where client_channel_id=#{id}
+    </delete>
+
+    <insert id="addSaveClientChannel" parameterType="java.util.List">
+        insert into pay_client_merchant_channel(client_channel_id,merchant_channel_id,priority)
+        values
+        <foreach collection="list" item="pojo" index="index" separator=",">
+            (#{pojo.clientChannelId},#{pojo.merchantChannelId},#{pojo.priority})
+        </foreach>
+    </insert>
+
+    <select id="queryAllList" parameterType="Map" resultType="com.city.city_collector.admin.pay.entity.PayClientChannel">
+        select id,`name`
+        from pay_client_channel where del = 0
+    </select>
+
+</mapper>

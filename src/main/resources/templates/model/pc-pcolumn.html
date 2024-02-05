@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <@includeNew path="/model/common/pc-header.html" encoding="UTF-8">
+</
+@includeNew>
+
+<script type="text/javascript" src="${context}/bootstrap/js/page.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/busy-load/dist/app.min.js"></script>
+</head>
+<body>
+<div class="container">
+
+    <@includeNew path="/model/common/pc-column.html" encoding="UTF-8">
+</
+@includeNew>
+
+<div id="banner-roll" class="swiper-container swiper-container1">
+    <div class="swiper-wrapper">
+        <!--
+        <a href="javascript:;" class="swiper-slide"><img src="https://pppp.642p.com/89/2020/04/WYqfu03e.gif" class="bimg" /></a>
+        -->
+    </div>
+    <div class="swiper-pagination swiper-pagination1"></div>
+</div>
+
+<div id="banner-list">
+    <!--
+    <a href="javascript:;"><img src="https://pppp.642p.com/89/2020/04/WYqfu03e.gif" class="bimg1" /></a>
+    -->
+</div>
+
+<div class="navnew ntitle">
+    ${cname }
+</div>
+
+<div class="row ysbox1" id="videoList">
+
+</div>
+
+<nav class="text-center">
+    <ul class="pagination" id="pages"></ul>
+</nav>
+
+<div id="btbanner-list"></div>
+<@includeNew path="/model/common/pc-footer.html" encoding="UTF-8">
+</
+@includeNew>
+</div>
+
+<@includeNew path="/model/common/mb-xfadv.html" encoding="UTF-8">
+</@includeNew>
+
+<script>
+    var cid = '${cid}';
+    var pageNum = 1;
+    var totalPage = 1;
+
+    $(function () {
+        updateData(1);
+
+    <@includeNew
+        path = "/model/common/pc-adjs.html"
+        encoding = "UTF-8" > < /@includeNew>
+    });
+
+    function updateData(pageNum) {
+        $("body").busyLoad("show", {
+            background: "rgba(0, 0, 0, 0.2)"
+        });
+        $.ajax({
+            type: 'get',
+            url: "${context}/data/column_${cid}_" + pageNum + ".json",
+            data: {},
+            cache: false,
+            success: function (data) {
+                try {
+                    pageNum = data.page;
+                    totalPage = data.totalPage;
+                    var dl = data.list;
+
+                    var $str = '';
+                    for (var i = 0; i < dl.length; i++) {
+                        $str += '<a href="${context}/video/video_' + dl[i].id + '.html" target="_blank">' +
+                            '<div class="col-sm-3 col-xs-6 ysbox2"> ' +
+                            '<div class="imgbox1"><div> ' +
+                            '<img src="${context}/bootstrap/image/zwt.png" data-original="' + dl[i].vpic + '" class="img1" /> ' +
+                            '</div>' +
+                            '</div> ' +
+                            '<div class="zytxt">' + dl[i].vname + '</div>' +
+                            '</div></a>';
+                    }
+
+                    $("#videoList").html($str);
+
+                    $("img").lazyload({
+                        effect: "show"
+                        , load: function () {
+                            var tw = $(this).width();
+                            var tpw = $(this).parent().width();
+                            var th = $(this).height();
+                            var tph = $(this).parent().height();
+                            if (tw < tpw && th < tph) {
+                                if (tpw / tw > tph / th) {
+                                    $(this).css("height", "100%");
+                                } else {
+                                    $(this).css("width", "100%");
+                                }
+                            }
+                        }
+                    });
+
+                    $("body").scrollTop(0);
+                    $(window).scrollTop(0);
+
+                    cpage("#pages", pageNum, totalPage, updateData);
+
+                    $("body").busyLoad("hide");
+                } catch (e) {
+                    console.log(e);
+                    alert("获取列表失败，请重试!");
+                    $("body").busyLoad("hide");
+                }
+            },
+            error: function (xhr, desc, err) {
+                $("body").busyLoad("hide");
+                alert("获取列表失败，请重试!");
+            }
+        });
+
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,622 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd"
+        >
+<mapper namespace="com.city.city_collector.admin.system.dao.SysUserDao">
+    <!--查询分页数据 -->
+    <select id="queryPage" parameterType="Map" resultType="Map">
+        select
+        tt.id,tt.`name`,tt.phone,tt.last_login_date,tt.username,tt.`status`,
+        GROUP_CONCAT(tt.`role`) role,GROUP_CONCAT(tt.`dept`) dept
+        from
+        (select
+        t.ID,t.`name`,t.phone,t.last_login_date,t.username,t.`status`,GROUP_CONCAT(tsr.`name`)
+        role,"" dept
+        from sys_user t
+        left join sys_user_role tur on t.ID =tur.user_id
+        left join sys_role tsr on tur.role_id = tsr.ID
+        <where>
+            <if test="username !=null and username !=''">
+                and t.username like "%"#{username}"%"
+            </if>
+            <if test="phone !=null and phone !=''">
+                and t.phone like "%"#{phone}"%"
+            </if>
+            <if test="name !=null and name !=''">
+                and t.name like "%"#{name}"%"
+            </if>
+            <if test="status !=null and status !=''">
+                and t.status = #{status}
+            </if>
+        </where>
+        GROUP BY
+        t.ID,t.`name`,t.phone,t.last_login_date,t.username,t.`status`
+        union all
+        select
+        t.ID,t.`name`,t.phone,t.last_login_date,t.username,t.`status`,""
+        role,GROUP_CONCAT(sd.`name`) dept
+        from sys_user t
+        left join
+        sys_user_dept tud on tud.user_id = t.ID
+        left join sys_dept sd on
+        tud.dept_id = sd.ID
+        <where>
+            <if test="username !=null and username !=''">
+                and t.username like "%"#{username}"%"
+            </if>
+            <if test="phone !=null and phone !=''">
+                and t.phone like "%"#{phone}"%"
+            </if>
+            <if test="name !=null and name !=''">
+                and t.name like "%"#{name}"%"
+            </if>
+            <if test="status !=null and status !=''">
+                and t.status = #{status}
+            </if>
+        </where>
+        GROUP BY
+        t.ID,t.`name`,t.phone,t.last_login_date,t.username,t.`status`) tt
+        GROUP BY
+        tt.ID,tt.`name`,tt.phone,tt.last_login_date,tt.username,tt.`status`
+        <if test="orderby !=null and orderby !=''">
+            order by ${orderby}
+        </if>
+        limit
+        #{start},#{end}
+    </select>
+    <!--查询总体记录数 -->
+    <select id="queryCount" parameterType="Map" resultType="int">
+        select count(1) count
+        from(
+        select tt.id,tt.`name`,tt.phone,tt.last_login_date,tt.username,tt.`status`
+        from
+        (select
+        t.ID,t.`name`,t.phone,t.last_login_date,t.username,t.`status`,GROUP_CONCAT(tsr.`name`)
+        role,"" dept
+        from sys_user t
+        left join sys_user_role tur on t.ID =tur.user_id
+        left join sys_role tsr on tur.role_id = tsr.ID
+        <where>
+            <if test="username !=null and username !=''">
+                and t.username like "%"#{username}"%"
+            </if>
+            <if test="phone !=null and phone !=''">
+                and t.phone like "%"#{phone}"%"
+            </if>
+            <if test="name !=null and name !=''">
+                and t.name like "%"#{name}"%"
+            </if>
+            <if test="status !=null and status !=''">
+                and t.status = #{status}
+            </if>
+        </where>
+        GROUP BY
+        t.ID,t.`name`,t.phone,t.last_login_date,t.username,t.`status`
+        union
+        all
+        select
+        t.ID,t.`name`,t.phone,t.last_login_date,t.username,t.`status`,""
+        role,GROUP_CONCAT(sd.`name`) dept
+        from sys_user t
+        left join
+        sys_user_dept tud on tud.user_id = t.ID
+        left join sys_dept sd on
+        tud.dept_id = sd.ID
+        <where>
+            <if test="username !=null and username !=''">
+                and t.username like "%"#{username}"%"
+            </if>
+            <if test="phone !=null and phone !=''">
+                and t.phone like "%"#{phone}"%"
+            </if>
+            <if test="name !=null and name !=''">
+                and t.name like "%"#{name}"%"
+            </if>
+            <if test="status !=null and status !=''">
+                and t.status = #{status}
+            </if>
+        </where>
+        GROUP BY
+        t.ID,t.`name`,t.phone,t.last_login_date,t.username,t.`status`) tt
+        GROUP BY
+        tt.ID,tt.`name`,tt.phone,tt.last_login_date,tt.username,tt.`status`
+        ) a
+    </select>
+    <!--添加记录 -->
+    <insert id="addSave" parameterType="com.city.city_collector.admin.system.entity.SysUser" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into
+        sys_user(username,password,name,phone,`status`,`version`,descript,money,frozen_money,proxy_id,proxy_name,proxy_no,quota,total_quota,cash_ratio,cash_commission,min_commission,type,merchant_my,merchant_no,merchant_ip,urlpay,url,gotype,urlcash,paykey,paykeyname,cash_mode,ptmcash_commission,ptmcash_mode,usdtcash_commission,usdtcash_mode,mcash_commission,mptmcash_commission,musdtcash_commission,urlquery,cash_config,dfmin_commission,cash_configstr)
+        value(#{username},#{password},#{name},#{phone},#{status},0,#{descript},#{money},#{frozenMoney},#{proxyId},#{proxyName},#{proxyNo},#{quota},#{totalQuota},#{cashRatio},#{cashCommission},#{minCommission},#{type},#{merchantMy},#{merchantNo},#{merchantIp},#{urlpay},#{url},#{gotype},#{urlcash},#{paykey},#{paykeyname},#{cashMode},#{ptmcashCommission},#{ptmcashMode},#{usdtcashCommission},#{usdtcashMode},#{mcashCommission},#{mptmcashCommission},#{musdtcashCommission},#{urlquery},#{cashConfig},#{dfminCommission},#{cashConfigstr})
+    </insert>
+    <!--查询单条记录 -->
+    <select id="querySingle" parameterType="Map" resultType="com.city.city_collector.admin.system.entity.SysUser">
+        select id,username,password,payword,phone,name,status,version,last_login_date lastLoginDate,proxy_id
+        proxyId,proxy_name proxyName,
+        proxy_no proxyNo,quota,total_quota totalQuota,jrcg,lscg,jrcgl,lscgl,xdl,api,gotype,merchant_my merchantMy,type,
+        cash_commission cashCommission,min_commission minCommission,money,frozen_money frozenMoney,cash_ratio cashRatio,
+        type,create_time createTime,merchant_no merchantNo,merchant_ip merchantIp,urlpay,url,descript,gotype,urlcash,
+        adminip,apiip,paykey,paykeyname,valid_status validStatus,valid_code validCode
+        ,cash_mode cashMode,ptmcash_commission ptmcashCommission,ptmcash_mode ptmcashMode,usdtcash_commission
+        usdtcashCommission,usdtcash_mode usdtcashMode
+        ,mcash_commission mcashCommission,mptmcash_commission mptmcashCommission,musdtcash_commission
+        musdtcashCommission,urlquery,cash_config cashConfig,dfmin_commission dfminCommission,cash_configstr
+        cashConfigstr
+        from sys_user
+        <where>
+            <if test="id !=null">
+                id=#{id,jdbcType=INTEGER}
+            </if>
+            <if test="username !=null and username !=''">
+                and username=#{username}
+            </if>
+        </where>
+    </select>
+    <!--编辑数据 -->
+    <update id="editSave" parameterType="com.city.city_collector.admin.system.entity.SysUser">
+        update sys_user
+        <set>
+            <if test="name !=null">
+                name=#{name},
+            </if>
+            <if test="password !=null and password !=''">
+                password=#{password},
+            </if>
+            <if test="payword !=null and payword !=''">
+                payword=#{payword},
+            </if>
+            <if test="phone !=null">
+                phone=#{phone},
+            </if>
+            <if test="status !=null and status !=''">
+                `status`=#{status},
+            </if>
+            <if test="version !=null">
+                `version`=#{version},
+            </if>
+            <if test="lastLoginDate !=null">
+                last_login_date=#{lastLoginDate},
+            </if>
+
+            <if test="proxyId !=null">
+                `proxy_id`=#{proxyId},
+            </if>
+            <if test="proxyNo !=null and proxyNo !=''">
+                `proxy_no`=#{proxyNo},
+            </if>
+            <if test="proxyName !=null and proxyName !=''">
+                `proxy_name`=#{proxyName},
+            </if>
+
+            <if test="api !=null">
+                `api`=#{api},
+            </if>
+
+            <if test="cashCommission !=null">
+                `cash_commission`=#{cashCommission},
+            </if>
+            <if test="minCommission !=null">
+                `min_commission`=#{minCommission},
+            </if>
+
+            <if test="cashRatio !=null">
+                `cash_ratio`=#{cashRatio},
+            </if>
+
+            <if test="urlpay !=null">
+                urlpay=#{urlpay},
+            </if>
+
+            <if test="urlcash !=null">
+                urlcash=#{urlcash},
+            </if>
+
+            <if test="merchantNo !=null and merchantNo !=''">
+                merchant_no=#{merchantNo},
+            </if>
+
+            <if test="merchantMy !=null and merchantMy !=''">
+                merchant_my=#{merchantMy},
+            </if>
+
+            <if test="merchantIp !=null and merchantIp !=''">
+                merchant_ip=#{merchantIp},
+            </if>
+            <if test="url !=null">
+                url=#{url},
+            </if>
+            <if test="descript !=null">
+                `descript`=#{descript},
+            </if>
+            <if test="gotype !=null">
+                `gotype`=#{gotype},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+    <!--删除数据，关联删除用户菜单，用户角色，用户部门数据 -->
+    <delete id="delete" parameterType="java.lang.String">
+        delete su,sur,sum,sud from sys_user su
+        left join sys_user_role sur on su.id=sur.user_id
+        left join sys_user_menu sum on su.id=sum.user_id
+        left join sys_user_dept sud on su.id=sud.user_id
+        where su.id in (${_parameter})
+    </delete>
+
+    <!--查询所有用户-->
+    <select id="queryAllUser" parameterType="Map" resultType="Map">
+        select id,`name`,username from sys_user order by id asc
+    </select>
+
+    <!--查询用户关联的所有菜单-->
+    <select id="queryUserMenuIds" parameterType="java.lang.Long" resultType="java.lang.String">
+        select GROUP_CONCAT(menu_id) menu_ids
+        from sys_user_menu
+        where user_id=#{userId}
+        GROUP BY user_id
+    </select>
+    <!--删除用户关联菜单数据-->
+    <delete id="deleteUserMenu" parameterType="java.lang.String">
+        delete from sys_user_menu where user_id in (${_parameter})
+    </delete>
+    <!-- 给用户分配菜单 -->
+    <insert id="addSaveUserMenu" parameterType="java.util.List">
+        insert into sys_user_menu(user_id,menu_id)
+        values
+        <foreach collection="list" item="pojo" index="index" separator=",">
+            (#{pojo.user_id},#{pojo.menu_id})
+        </foreach>
+    </insert>
+
+    <!--查询用户关联的所有角色-->
+    <select id="queryUserRoleIds" parameterType="java.lang.Long" resultType="java.lang.String">
+        select GROUP_CONCAT(role_id) role_ids
+        from sys_user_role
+        where user_id=#{userId}
+        GROUP BY user_id
+    </select>
+    <!--删除用户关联菜单数据-->
+    <delete id="deleteUserRole" parameterType="java.lang.String">
+        delete from sys_user_role where user_id in (${_parameter})
+    </delete>
+    <!-- 给机构分配用户 -->
+    <insert id="addSaveUserRole" parameterType="java.util.List">
+        insert into sys_user_role(user_id,role_id)
+        values
+        <foreach collection="list" item="pojo" index="index" separator=",">
+            (#{pojo.user_id},#{pojo.role_id})
+        </foreach>
+    </insert>
+
+    <!--获取用户的所有菜单-->
+    <select id="queryUserMenus" parameterType="java.lang.Long"
+            resultType="com.city.city_collector.admin.system.entity.SysMenu">
+        SELECT id,fid,`order`,`name`,url,`image`,permission,`type`
+        FROM
+        (
+        SELECT
+        DISTINCT mn.id id,mn.fid fid,mn.`order` `order`,mn.`name` `name`,mn.`image` `image`,mn.url url,mn.permission
+        permission,mn.`type` `type`
+        FROM sys_user_role ur
+        INNER JOIN sys_role_menu rm on ur.role_id=rm.role_id and ur.user_id = #{id}
+        INNER JOIN sys_menu mn ON mn.id = rm.menu_id
+        AND mn.`status` = '1'
+        where mn.`type` is null or mn.`type` <![CDATA[  <>  ]]> '1'
+        UNION
+        SELECT
+        DISTINCT mn.id id,mn.fid fid,mn.`order` `order`,mn.`name` `name`,mn.`image` `image`,mn.url url,mn.permission
+        permission,mn.`type` `type`
+        FROM
+        sys_user_menu um
+        INNER JOIN sys_menu mn ON um.menu_id = mn.id AND um.user_id = #{id} AND mn.`status` = '1'
+        where mn.`type` is null or mn.`type` <![CDATA[  <>  ]]> '1'
+        ) a
+        ORDER BY
+        a.`order` asc
+    </select>
+
+    <!--获取用户的所有菜单-->
+    <select id="queryUserPermission" parameterType="java.lang.Long" resultType="java.lang.String">
+        SELECT permission
+        FROM
+        (
+        SELECT
+        DISTINCT mn.permission permission
+        FROM sys_user_role ur
+        INNER JOIN sys_role_menu rm on ur.role_id=rm.role_id and ur.user_id = #{id}
+        INNER JOIN sys_menu mn ON mn.id = rm.menu_id
+        AND mn.`status` = '1'
+        UNION
+        SELECT
+        DISTINCT mn.permission permission
+        FROM
+        sys_user_menu um
+        INNER JOIN sys_menu mn ON um.menu_id = mn.id AND um.user_id = #{id} AND mn.`status` = '1'
+        ) a
+    </select>
+
+    <!-- 查询导出数据 -->
+    <select id="queryExportList" parameterType="Map" resultType="Map">
+        select
+        tt.id,tt.`name`,tt.phone,tt.last_login_date,tt.username,case when tt.`status`=1 then '启用' else '未启用' end
+        `status`,
+        GROUP_CONCAT(tt.`role`) role,GROUP_CONCAT(tt.`dept`) dept
+        from
+        (select
+        t.ID,t.`name`,t.phone,t.last_login_date,t.username,t.`status`,GROUP_CONCAT(tsr.`name`)
+        role,"" dept
+        from sys_user t
+        left join sys_user_role tur on t.ID =tur.user_id
+        left join sys_role tsr on tur.role_id = tsr.ID
+        <where>
+            <if test="username !=null and username !=''">
+                and t.username like "%"#{username}"%"
+            </if>
+            <if test="phone !=null and phone !=''">
+                and t.phone like "%"#{phone}"%"
+            </if>
+            <if test="name !=null and name !=''">
+                and t.name like "%"#{name}"%"
+            </if>
+            <if test="status !=null and status !=''">
+                and t.status = #{status}
+            </if>
+        </where>
+        GROUP BY
+        t.ID,t.`name`,t.phone,t.last_login_date,t.username,t.`status`
+        union all
+        select
+        t.ID,t.`name`,t.phone,t.last_login_date,t.username,t.`status`,""
+        role,GROUP_CONCAT(sd.`name`) dept
+        from sys_user t
+        left join
+        sys_user_dept tud on tud.user_id = t.ID
+        left join sys_dept sd on
+        tud.dept_id = sd.ID
+        <where>
+            <if test="username !=null and username !=''">
+                and t.username like "%"#{username}"%"
+            </if>
+            <if test="phone !=null and phone !=''">
+                and t.phone like "%"#{phone}"%"
+            </if>
+            <if test="name !=null and name !=''">
+                and t.name like "%"#{name}"%"
+            </if>
+            <if test="status !=null and status !=''">
+                and t.status = #{status}
+            </if>
+        </where>
+        GROUP BY
+        t.ID,t.`name`,t.phone,t.last_login_date,t.username,t.`status`) tt
+        GROUP BY
+        tt.ID,tt.`name`,tt.phone,tt.last_login_date,tt.username,tt.`status`
+        <if test="orderby !=null and orderby !=''">
+            order by ${orderby}
+        </if>
+    </select>
+
+    <!-- 查询启用的商户或者上游 -->
+    <select id="queryMerchantOrClient" parameterType="Map"
+            resultType="com.city.city_collector.admin.system.entity.SysUser">
+        select id,username,name
+        from sys_user
+        where type in (2,3) and status=1
+    </select>
+
+    <!-- 查询有效的通道列表 -->
+    <select id="queryMerchantClientChannelList" parameterType="Map"
+            resultType="com.city.city_collector.channel.bean.ChannelInfo">
+        select su1.id merchantId,su1.username merchantNo,su1.`name` merchantName,pmc.id mcId,pmc.`name` mcName,
+        pmc.channel_type_id chanelTypeId,
+        pcc.id ccId,pcc.min_money minMoney,pcc.max_money maxMoney,pcc.start_time startTime,pcc.end_time
+        endTime,pcc.mtype mtype,
+        pcc.money moneyStr,su2.id clientId,su2.username clientNo,su2.`name` clientName,pcc.`name` ccName,pcc.keyname
+        keyname,
+        su2.gotype gtype,su2.merchant_no clientMerchantNo,su2.merchant_my clientMerchantMy,su2.urlpay
+        urlpay,su2.merchant_ip merchantIp,
+        pcc.params params,pcmc.priority priority,
+        pcc.primary_platform primaryPlatform,
+        pcc.retry_number retryNumber
+        from sys_user su1
+        inner join pay_merchant_channel pmc on su1.id=pmc.merchant_id
+        inner join pay_client_merchant_channel pcmc on pmc.id=pcmc.merchant_channel_id
+        inner join pay_client_channel pcc on pcc.id=pcmc.client_channel_id
+        inner join sys_user su2 on pcc.client_id=su2.id
+        where su1.status=1 and su2.status=1 and pmc.status=1 and pcc.status=1 and pmc.del=0 and pcc.del=0
+        and pcc.ctype=0
+        order by su1.id,pcmc.priority desc
+    </select>
+
+    <!-- 查询paytm相关的有效通道列表 -->
+    <select id="queryMerchantClientChannelListByPaytm" parameterType="Map"
+            resultType="com.city.city_collector.channel.bean.ChannelInfo">
+        select su1.id merchantId,su1.username merchantNo,su1.`name` merchantName,pmc.id mcId,pmc.`name` mcName,
+        pmc.channel_type_id chanelTypeId,
+        pcc.id ccId,pcc.min_money minMoney,pcc.max_money maxMoney,pcc.start_time startTime,pcc.end_time
+        endTime,pcc.mtype mtype,
+        pcc.money moneyStr,su2.id clientId,su2.username clientNo,su2.`name` clientName,pcc.`name` ccName,pcc.keyname
+        keyname,
+        su2.gotype gtype,su2.merchant_no clientMerchantNo,su2.merchant_my clientMerchantMy,su2.urlpay
+        urlpay,su2.merchant_ip merchantIp,
+        pcc.params params,pcc.paytmid paytmid,pcc.paytmkey paytmkey,pcc.paytmmd5 paytmmd5,pcc.paytmuid paytmuid,
+        pcc.primary_platform primaryPlatform
+        from sys_user su1
+        inner join pay_merchant_channel pmc on su1.id=pmc.merchant_id
+        inner join pay_client_merchant_channel pcmc on pmc.id=pcmc.merchant_channel_id
+        inner join pay_client_channel pcc on pcc.id=pcmc.client_channel_id
+        inner join sys_user su2 on pcc.client_id=su2.id
+        where su1.status=1 and su2.status=1 and pmc.status=1 and pcc.status=1 and pmc.del=0 and pcc.del=0
+        and pcc.ctype=1
+    </select>
+
+    <!-- 更新用户余额或冻结金额 -->
+    <update id="updateUserMoney" parameterType="com.city.city_collector.admin.system.entity.SysUser">
+        update sys_user
+        <set>
+            <if test="money !=null">
+                money=#{money},
+            </if>
+            <if test="frozenMoney !=null">
+                frozen_money=#{frozenMoney},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <!-- 获取商户当天的信息 -->
+    <select id="queryMerchantInfo" parameterType="Map" resultType="Map">
+        select FORMAT(IFNULL(money,0),2) money,FORMAT(IFNULL(frozen_money,0),2)
+        frozenMoney,FORMAT(IFNULL(money,0)-IFNULL(frozen_money,0),2) amount,`password`,payword,FORMAT(a.orderMoney,2)
+        orderMoney,merchant_my my
+        from sys_user su
+        left join (
+        select IFNULL(sum(money),0) orderMoney
+        from pay_order
+        where pay_time >= CURRENT_DATE and merchant_id=#{id}
+        ) a on 1=1
+        where id=#{id}
+    </select>
+
+    <select id="queryProxyInfo" parameterType="Map" resultType="Map">
+        select FORMAT(IFNULL(money,0),2) money,FORMAT(IFNULL(frozen_money,0),2)
+        frozenMoney,FORMAT(IFNULL(money,0)-IFNULL(frozen_money,0),2) amount,`password`,payword,FORMAT(a.orderMoney,2)
+        orderMoney
+        from sys_user su
+        left join (
+        select IFNULL(sum(money),0) orderMoney
+        from pay_proxy_record
+        where create_time >= CURRENT_DATE and proxy_id=#{id} and type=2
+        ) a on 1=1
+        where id=#{id}
+    </select>
+
+    <!-- 冻结用户余额 -->
+    <update id="userFrozenMoney" parameterType="com.city.city_collector.admin.system.entity.SysUser">
+        update sys_user
+        set
+        frozen_money=frozen_money+#{frozenMoney}
+        where id=#{id}
+    </update>
+
+    <!-- 解冻用户余额 -->
+    <update id="userDisFrozenMoney" parameterType="com.city.city_collector.admin.system.entity.SysUser">
+        update sys_user
+        set
+        frozen_money=frozen_money-#{frozenMoney}
+        where id=#{id}
+    </update>
+
+    <select id="queryClientInfoList" resultType="Map">
+        select id,username,`name`,FORMAT(IFNULL(money,0),2) money,FORMAT(IFNULL(frozen_money,0),2)
+        frozenMoney,cash_commission cashCommission,cash_ratio cashRatio,FORMAT(IFNULL(money,0)-IFNULL(frozen_money,0),2)
+        amount
+        from sys_user
+        where type=3 and status=1
+    </select>
+    <select id="queryAllClientInfo" resultType="com.city.city_collector.admin.system.entity.SysUser">
+       select su.id id, su.username username,su.`name` name,su.money money,su.frozen_money
+        frozenMoney,su.cash_commission cashCommission,su.cash_ratio cashRatio,su.money-su.frozen_money
+        amount, (IFNULL(cm.yajin,-1)) yajin
+        from sys_user su
+        left join channel_money cm on cm.client_Id  = su.id
+        where su.type=3 and su.status=1
+    </select>
+    <!-- 获取所有上游信息 -->
+    <select id="queryClientInfoListAll" resultType="Map">
+        select id,username,`name`,FORMAT(IFNULL(money,0),2) money,FORMAT(IFNULL(frozen_money,0),2)
+        frozenMoney,cash_commission cashCommission,cash_ratio cashRatio,FORMAT(IFNULL(money,0)-IFNULL(frozen_money,0),2)
+        amount
+        from sys_user
+        where type=3
+    </select>
+
+    <!-- 冻结/解冻用户余额和冻结金额 -->
+    <update id="userFrozenMoneyAndMoney" parameterType="com.city.city_collector.admin.system.entity.SysUser">
+        update sys_user
+        set
+        frozen_money=frozen_money+#{frozenMoney},money=money+#{money}
+        where id=#{id}
+    </update>
+
+
+    <select id="queryAdminInfo" parameterType="Map" resultType="Map">
+        select sum(a.totalMoney) totalMoney,sum(a.successMoney) successMoney,
+        sum(a.orderCount) orderCount,sum(a.successOrder) successOrder,sum(a.profit) profit,
+        case when sum(a.orderCount)=0 then 0 else round(sum(a.successOrder)/sum(a.orderCount),2)*100 end ratio,
+        sum(a.merchantMoney) merchantMoney,sum(a.merchantFrozenMoney) merchantFrozenMoney,
+        sum(a.proxyMoney) proxyMoney,sum(a.proxyFrozenMoney) proxyFrozenMoney
+
+        from (
+        select IFNULL(sum(po.money),0) totalmoney,IFNULL(sum(case when po.order_status=1 then money else 0 end),0)
+        successMoney,
+        count(1) orderCount,IFNULL(sum(case when po.order_status=1 then 1 else 0 end),0) successOrder,
+        IFNULL(sum(case when po.order_status=1 then profit else 0 end),0) profit,0 merchantMoney,
+        0 merchantFrozenMoney,0 proxyMoney,0 proxyFrozenMoney
+        from pay_order po
+        <![CDATA[ where id>=(select min(id) from pay_order where CREATE_TIME  >=  CURRENT_DATE) and xnorder=0 ]]>
+        union all
+
+        select 0 totalmoney,0 successMoney,0 orderCount,0 successOrder,0 profit,
+        IFNULL(sum(case when su.type=2 then su.money else 0 end),0) merchantMoney,
+        IFNULL(sum(case when su.type=2 then su.frozen_money else 0 end),0) merchantFrozenMoney,
+        IFNULL(sum(case when su.type=1 then su.money else 0 end),0) proxyMoney,
+        IFNULL(sum(case when su.type=1 then su.frozen_money else 0 end),0) proxyFrozenMoney
+
+
+        from sys_user su
+        -- where su.`status`='1'
+        ) a
+    </select>
+
+    <!-- 查询正在处理中的订单 -->
+    <select id="querySysDealOrder" parameterType="Map" resultType="int">
+        select count(1) cou
+        from pay_order po
+        where po.notify_status=0 and po.order_status=1
+    </select>
+
+    <update id="updateChromeId" parameterType="com.city.city_collector.admin.system.entity.SysUser">
+        update sys_user
+        set valid_status=#{validStatus},valid_code=#{validCode}
+        where id=#{id}
+    </update>
+
+    <!-- 查询指定时间段内的订单数 -->
+    <select id="queryOrderCountCharts" parameterType="Map" resultType="Map">
+        select a.d1 d1,sum(cou) cou,sum(acou) acou
+        from (
+        select DATE_FORMAT(CREATE_TIME,'%Y-%m-%d %H:%i') d1,1 cou,0 acou
+        from pay_order
+        <![CDATA[where CREATE_TIME >= #{startTime} and CREATE_TIME < #{endTime} and (order_status=1 or order_status=0)]]>
+        union all
+        select DATE_FORMAT(CREATE_TIME,'%Y-%m-%d %H:%i') d1,0 cou,1 acou
+        from pay_order_access
+        <![CDATA[where CREATE_TIME >= #{startTime} and CREATE_TIME < #{endTime} ]]>
+        ${sql}
+        ) a
+        group by a.d1
+        order by a.d1
+    </select>
+
+    <!-- 查询上游通道的预警 -->
+    <select id="queryOrderCountAlarm" parameterType="Map" resultType="Map">
+        select id,`name`,alarmNumber,alarmNumberup,sum(suc) suc,sum(tcount) tcount,case when sum(tcount)=0 then 0 else
+        (sum(suc)*100)/sum(tcount) end sratio
+        from (
+        select pcc.id id,pcc.`name` `name`,pcc.alarm_number alarmNumber,pcc.alarm_numberup alarmNumberup,case when
+        po.order_status then 1 else 0 end suc,case when po.id is null then 0 else 1 end tcount
+        from pay_client_channel pcc
+        left join pay_order po on po.client_channel_id=pcc.id
+        where pcc.alarm=1
+        and po.CREATE_TIME<![CDATA[  >=  ]]>#{startTime} and po.CREATE_TIME<![CDATA[  <  ]]>#{endTime}
+
+        union all
+        select id,`name`,alarm_number alarmNumber,alarm_numberup alarmNumberup,0 suc,0 tcount
+        from pay_client_channel
+        where alarm=1
+        ) a
+        group by id,`name`,alarmNumber,alarmNumberup
+        order by sratio asc
+    </select>
+</mapper>

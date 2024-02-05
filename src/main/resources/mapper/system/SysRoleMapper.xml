@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd"
+        >
+<mapper namespace="com.city.city_collector.admin.system.dao.SysRoleDao">
+    <!--查询分页数据-->
+    <select id="queryPage" parameterType="Map" resultType="Map">
+        SELECT id,name,status,`desc`
+        from sys_role
+        <where>
+            <if test="name !=null and name !=''">
+                and name like "%"#{name}"%"
+            </if>
+            <if test="status !=null and status !=''">
+                and status = #{status}
+            </if>
+        </where>
+        <if test="orderby !=null and orderby !=''">
+            order by ${orderby}
+        </if>
+        limit #{start},#{end}
+    </select>
+    <!--查询总体记录数-->
+    <select id="queryCount" parameterType="Map" resultType="int">
+        SELECT count(1) count
+        from sys_role
+        <where>
+            <if test="name !=null and name !=''">
+                and name like "%"#{name}"%"
+            </if>
+            <if test="status !=null and status !=''">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+    <!--添加记录-->
+    <insert id="addSave" parameterType="com.city.city_collector.admin.system.entity.SysRole" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into sys_role(name,status,`desc`)
+        value(#{name},#{status},#{desc})
+    </insert>
+    <!--编辑数据-->
+    <update id="editSave" parameterType="com.city.city_collector.admin.system.entity.SysRole">
+        update sys_role
+        <set>
+            <if test="name !=null and name !=''">
+                name=#{name},
+            </if>
+            <if test="status !=null and status !=''">
+                status=#{status},
+            </if>
+            <if test="desc !=null">
+                `desc`=#{desc},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+    <!--删除数据，关联删除用户角色，角色菜单数据-->
+    <delete id="delete" parameterType="java.lang.String">
+        delete sr,sur,srm from sys_role sr
+        left join sys_user_role sur on sr.id=sur.role_id
+        left join sys_role_menu srm on sr.id=srm.role_id
+        where sr.id in (${_parameter})
+    </delete>
+
+    <!--查询单条记录-->
+    <select id="querySingle" parameterType="Map" resultType="com.city.city_collector.admin.system.entity.SysRole">
+        select id,name,status,`desc`
+        from sys_role where id=#{id}
+    </select>
+
+
+    <!--查询所有角色-->
+    <select id="queryAllRole" parameterType="Map" resultType="Map">
+        select id,`name` from sys_role where status='1' order by id asc
+    </select>
+
+    <!--查询角色关联的所有菜单-->
+    <select id="queryRoleMenuIds" parameterType="java.lang.Long" resultType="java.lang.String">
+        select GROUP_CONCAT(menu_id) menu_ids
+        from sys_role_menu
+        where role_id=#{roleId}
+        GROUP BY role_id
+    </select>
+    <!--删除角色关联菜单数据-->
+    <delete id="deleteRoleMenu" parameterType="java.lang.String">
+        delete from sys_role_menu where role_id in (${_parameter})
+    </delete>
+    <!-- 给角色分配用户 -->
+    <insert id="addSaveRoleMenu" parameterType="java.util.List">
+        insert into sys_role_menu(role_id,menu_id)
+        values
+        <foreach collection="list" item="pojo" index="index" separator=",">
+            (#{pojo.role_id},#{pojo.menu_id})
+        </foreach>
+    </insert>
+
+    <!--查询角色下的所有用户-->
+    <select id="queryRoleUserIds" parameterType="java.lang.Long" resultType="java.lang.String">
+        SELECT group_concat(user_id) user_ids
+        from sys_user_role
+        where role_id=#{roleId}
+        group by role_id
+    </select>
+    <!--删除用户角色数据-->
+    <delete id="deleteRoleUser" parameterType="java.lang.String">
+        delete from sys_user_role where role_id in (${_parameter})
+    </delete>
+    <!-- 给角色分配用户 -->
+    <insert id="addSaveRoleUser" parameterType="java.util.List">
+        insert into sys_user_role(user_id,role_id)
+        values
+        <foreach collection="list" item="pojo" index="index" separator=",">
+            (#{pojo.user_id},#{pojo.role_id})
+        </foreach>
+    </insert>
+
+</mapper>

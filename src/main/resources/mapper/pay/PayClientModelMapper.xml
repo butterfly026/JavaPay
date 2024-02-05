@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd"
+        >
+<mapper namespace="com.city.city_collector.admin.pay.dao.PayClientModelDao">
+    <!--查询分页数据-->
+    <select id="queryPage" parameterType="Map" resultType="Map">
+        SELECT id,`name`,keyname,filepath,status,order_status orderStatus,pay_status payStatus,req_type
+        reqType,version,test_status testStatus,notifystr,cd_status cdStatus
+        from pay_client_model
+        <where>
+
+            <if test="name !=null and name !=''">
+                and `name` like "%"#{name}"%"
+            </if>
+            <if test="keyname !=null and keyname !=''">
+                and keyname like "%"#{keyname}"%"
+            </if>
+
+            <if test="status !=null and status !=''">
+                and status=#{status}
+            </if>
+
+            <if test="orderStatus !=null and orderStatus !=''">
+                and order_status=#{orderStatus}
+            </if>
+
+            <if test="payStatus !=null and payStatus !=''">
+                and pay_status=#{payStatus}
+            </if>
+
+            <if test="testStatus !=null and testStatus !=''">
+                and test_status=#{testStatus}
+            </if>
+
+            <if test="reqType !=null and reqType !=''">
+                and req_type=#{reqType}
+            </if>
+
+        </where>
+        limit #{start},#{end}
+    </select>
+    <!--查询总体记录数-->
+    <select id="queryCount" parameterType="Map" resultType="int">
+        SELECT count(1) count
+        from pay_client_model
+        <where>
+
+            <if test="name !=null and name !=''">
+                and `name` like "%"#{name}"%"
+            </if>
+            <if test="keyname !=null and keyname !=''">
+                and keyname like "%"#{keyname}"%"
+            </if>
+
+            <if test="status !=null and status !=''">
+                and status=#{status}
+            </if>
+
+            <if test="orderStatus !=null and orderStatus !=''">
+                and order_status=#{orderStatus}
+            </if>
+
+            <if test="payStatus !=null and payStatus !=''">
+                and pay_status=#{payStatus}
+            </if>
+
+            <if test="testStatus !=null and testStatus !=''">
+                and test_status=#{testStatus}
+            </if>
+
+            <if test="reqType !=null and reqType !=''">
+                and req_type=#{reqType}
+            </if>
+
+        </where>
+    </select>
+    <!--添加记录-->
+    <insert id="addSave" parameterType="com.city.city_collector.admin.pay.entity.PayClientModel" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into
+        pay_client_model(`name`,keyname,filepath,status,order_status,pay_status,req_type,version,test_status,json,notifystr,cd_status)
+        value(#{name},#{keyname},#{filepath},#{status},#{orderStatus},#{payStatus},#{reqType},#{version},#{testStatus},#{json},#{notifystr},#{cdStatus})
+    </insert>
+    <!--查询单条记录-->
+    <select id="querySingle" parameterType="Map" resultType="com.city.city_collector.admin.pay.entity.PayClientModel">
+        select id,`name`,keyname,filepath,status,order_status orderStatus,pay_status payStatus,req_type
+        reqType,version,test_status testStatus,json,notifystr,cd_status cdStatus
+        from pay_client_model
+        <where>
+            <if test="name !=null and name !=''">
+                and `name`=#{name}
+            </if>
+            <if test="keyname !=null and keyname !=''">
+                and keyname=#{keyname}
+            </if>
+            <if test="id !=null and id !=''">
+                and `id`=#{id}
+            </if>
+        </where>
+        limit 1
+    </select>
+
+    <!-- 查询列表 -->
+    <select id="queryList" parameterType="Map" resultType="com.city.city_collector.admin.pay.entity.PayClientModel">
+        select id,`name`,keyname,filepath,status,order_status orderStatus,pay_status payStatus,req_type
+        reqType,version,test_status testStatus,json,notifystr,cd_status cdStatus
+        from pay_client_model
+        <where>
+
+            <if test="name !=null and name !=''">
+                and `name` like "%"#{name}"%"
+            </if>
+            <if test="keyname !=null and keyname !=''">
+                and keyname like "%"#{keyname}"%"
+            </if>
+
+            <if test="status !=null and status !=''">
+                and status=#{status}
+            </if>
+
+            <if test="orderStatus !=null and orderStatus !=''">
+                and order_status=#{orderStatus}
+            </if>
+
+            <if test="payStatus !=null and payStatus !=''">
+                and pay_status=#{payStatus}
+            </if>
+
+            <if test="testStatus !=null and testStatus !=''">
+                and test_status=#{testStatus}
+            </if>
+
+            <if test="reqType !=null and reqType !=''">
+                and req_type=#{reqType}
+            </if>
+
+        </where>
+    </select>
+
+    <!-- 查询列表 不包含json字段 -->
+    <select id="queryListNoJson" parameterType="Map"
+            resultType="com.city.city_collector.admin.pay.entity.PayClientModel">
+        select id,`name`,keyname,filepath,status,order_status orderStatus,pay_status payStatus,req_type
+        reqType,version,test_status testStatus,notifystr,cd_status cdStatus
+        from pay_client_model
+        <where>
+
+            <if test="name !=null and name !=''">
+                and `name` like "%"#{name}"%"
+            </if>
+            <if test="keyname !=null and keyname !=''">
+                and keyname like "%"#{keyname}"%"
+            </if>
+
+            <if test="status !=null and status !=''">
+                and status=#{status}
+            </if>
+
+            <if test="orderStatus !=null and orderStatus !=''">
+                and order_status=#{orderStatus}
+            </if>
+
+            <if test="payStatus !=null and payStatus !=''">
+                and pay_status=#{payStatus}
+            </if>
+
+            <if test="testStatus !=null and testStatus !=''">
+                and test_status=#{testStatus}
+            </if>
+
+            <if test="reqType !=null and reqType !=''">
+                and req_type=#{reqType}
+            </if>
+
+        </where>
+    </select>
+    <!-- 查询模块是否存在 -->
+    <select id="queryModelExists" parameterType="Map"
+            resultType="com.city.city_collector.admin.pay.entity.PayClientModel">
+        select id,`name`,keyname,filepath,status,order_status orderStatus,pay_status payStatus,req_type
+        reqType,version,test_status testStatus,notifystr,cd_status cdStatus
+        from pay_client_model
+        where `name`=#{name} or keyname=#{keyname}
+        limit 1
+    </select>
+    <!-- 编辑功能查询模块是否存在 -->
+    <select id="queryModelExistsEdit" parameterType="Map"
+            resultType="com.city.city_collector.admin.pay.entity.PayClientModel">
+        select id,`name`,keyname,filepath,status,order_status orderStatus,pay_status payStatus,req_type
+        reqType,version,test_status testStatus,notifystr,cd_status cdStatus
+        from pay_client_model
+        where (`name`=#{name} or keyname=#{keyname})
+        and id <![CDATA[  <>  ]]> #{id}
+        limit 1
+    </select>
+    <!--编辑数据-->
+    <update id="editSave" parameterType="com.city.city_collector.admin.pay.entity.PayClientModel">
+        update pay_client_model
+        set `name`=#{name},
+        status=#{status},
+        order_status=#{orderStatus},
+        pay_status=#{payStatus},
+        req_type=#{reqType},
+        version=version+1,
+        test_status=#{testStatus},
+        cd_status=#{cdStatus},
+        json=#{json}
+        ,notifystr=#{notifystr}
+        where id=#{id}
+    </update>
+
+    <!--删除数据-->
+    <delete id="delete" parameterType="java.lang.String">
+        delete from pay_client_model where id in (${_parameter})
+    </delete>
+</mapper>

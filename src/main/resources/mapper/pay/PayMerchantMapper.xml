@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd"
+        >
+<mapper namespace="com.city.city_collector.admin.pay.dao.PayMerchantDao">
+    <!--查询分页数据-->
+    <select id="queryPage" parameterType="Map" resultType="Map">
+        select id,username,`name`,proxy_no proxyNo,quota,total_quota totalQuota,IFNULL(a.jrdds,0) jrdds,IFNULL(a.jrcg,0)
+        jrcg,
+        case when a.jrdds is null then '0%' else CONCAT(round(a.jrcg/a.jrdds*100,2),'%') end jrcgl,IFNULL(a.dayMoney,0)
+        dayMoney,
+        xdl,
+        cash_configstr cashConfigstr
+        ,cash_ratio cashRatio,money,frozen_money frozenMoney,
+        CREATE_TIME createTime,`status`,merchant_my merchantMy
+        from sys_user su
+
+        left join (
+        select merchant_id merchantId,count(1) jrdds,sum(case when po.order_status=1 then 1 else 0 end) jrcg
+        ,sum(case when po.order_status=1 then money else 0 end) dayMoney
+        from pay_order po
+        <![CDATA[ where id>=(select min(id) from pay_order where CREATE_TIME  >=  CURRENT_DATE) and xnorder=0 ]]>
+        GROUP BY merchant_id
+        ) a on a.merchantId=su.id
+
+        where type=2
+
+        <if test="username !=null and username !=''">
+            and username like "%"#{username}"%"
+        </if>
+
+        <if test="name !=null and name !=''">
+            and `name` like "%"#{name}"%"
+        </if>
+
+        <if test="status !=null and status !=''">
+            and `status`=#{status}
+        </if>
+
+        <if test="proxyId !=null and proxyId !=''">
+            and `proxy_id`=#{proxyId}
+        </if>
+
+        <if test="merchantId !=null and merchantId !=''">
+            and su.id=#{merchantId}
+        </if>
+
+        <if test='jyl !=null and jyl == "1"'>
+            and a.`jrcg` <![CDATA[  >  ]]> 0
+        </if>
+
+        <if test='jyl !=null and jyl == "0"'>
+            and ( a.`jrcg` is null or a.`jrcg` <![CDATA[  <=  ]]> 0 )
+        </if>
+
+        <if test="orderby !=null and orderby !=''">
+            order by ${orderby}
+        </if>
+        limit #{start},#{end}
+    </select>
+    <!--查询总体记录数-->
+    <select id="queryCount" parameterType="Map" resultType="int">
+        SELECT count(1) count
+        from sys_user su
+
+        left join (
+        select merchant_id merchantId,count(1) jrdds,sum(case when po.order_status=1 then 1 else 0 end) jrcg
+        ,sum(case when po.order_status=1 then money else 0 end) dayMoney
+        from pay_order po
+        <![CDATA[ where id>=(select min(id) from pay_order where CREATE_TIME  >=  CURRENT_DATE) and xnorder=0 ]]>
+        GROUP BY merchant_id
+        ) a on a.merchantId=su.id
+
+        where type=2
+
+        <if test="username !=null and username !=''">
+            and username like "%"#{username}"%"
+        </if>
+
+        <if test="name !=null and name !=''">
+            and `name` like "%"#{name}"%"
+        </if>
+
+        <if test="status !=null and status !=''">
+            and `status`=#{status}
+        </if>
+
+        <if test="proxyId !=null and proxyId !=''">
+            and `proxy_id`=#{proxyId}
+        </if>
+
+        <if test="merchantId !=null and merchantId !=''">
+            and su.id=#{merchantId}
+        </if>
+
+        <if test='jyl !=null and jyl == "1"'>
+            and a.`jrcg` <![CDATA[  >  ]]> 0
+        </if>
+
+        <if test='jyl !=null and jyl == "0"'>
+            and ( a.`jrcg` is null or a.`jrcg` <![CDATA[  <=  ]]> 0 )
+        </if>
+
+    </select>
+
+    <select id="querySelectList" parameterType="Map" resultType="com.city.city_collector.admin.system.entity.SysUser">
+        select id,username,`name`,round(IFNULL(money,0),2) money,round(IFNULL(frozen_money,0),2)
+        frozenMoney,round(IFNULL(money,0)-IFNULL(frozen_money,0),2) amount
+        from sys_user where type=2
+    </select>
+
+    <!--添加记录-->
+    <insert id="addSave" parameterType="com.city.city_collector.admin.pay.entity.PayMerchant" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into sys_user()
+        value()
+    </insert>
+    <!--查询单条记录-->
+    <select id="querySingle" parameterType="Map" resultType="com.city.city_collector.admin.pay.entity.PayMerchant">
+        select
+        from sys_user where id=#{id}
+    </select>
+    <!--编辑数据-->
+    <update id="editSave" parameterType="com.city.city_collector.admin.system.entity.SysUser">
+        update sys_user
+        set proxy_id=#{proxyId},proxy_no=#{proxyNo},proxy_name=#{proxyName},`name`=#{name},`status`=#{status},api=#{api}
+        ,cash_commission=#{cashCommission},min_commission=#{minCommission}
+        ,cash_mode=#{cashMode},ptmcash_commission=#{ptmcashCommission},ptmcash_mode=#{ptmcashMode}
+        ,usdtcash_commission=#{usdtcashCommission},usdtcash_mode=#{usdtcashMode}
+        ,mcash_commission=#{mcashCommission},mptmcash_commission=#{mptmcashCommission},musdtcash_commission=#{musdtcashCommission}
+        ,cash_config=#{cashConfig},dfmin_commission=#{dfminCommission},cash_configstr=#{cashConfigstr}
+        where id=#{id}
+    </update>
+
+    <!--删除数据-->
+    <delete id="delete" parameterType="java.lang.String">
+        delete from sys_user where id in (${_parameter})
+    </delete>
+
+    <update id="updateMerchantAdminip" parameterType="Map">
+        update sys_user
+        set adminip=#{adminip}
+        where id=#{id}
+    </update>
+
+    <update id="updateMerchantApiip" parameterType="Map">
+        update sys_user
+        set apiip=#{apiip}
+        where id=#{id}
+    </update>
+
+    <!-- 导出商户 -->
+    <select id="queryExportListMerchant" parameterType="Map" resultType="Map">
+        select su.username username,su.`name` `name`,round(IFNULL(money,0),2) money,
+        round(IFNULL(frozen_money,0),2) frozenMoney,round(IFNULL(money,0)-IFNULL(frozen_money,0),2) amount
+        from sys_user su
+        left join (
+        select merchant_id merchantId,count(1) jrdds,sum(case when po.order_status=1 then 1 else 0 end) jrcg
+        ,sum(case when po.order_status=1 then money else 0 end) dayMoney
+        from pay_order po
+        where id>(select max(id) from pay_order where CREATE_TIME <![CDATA[ < ]]> CURRENT_DATE)
+        GROUP BY merchant_id
+        ) a on a.merchantId=su.id
+
+        where type=2
+        <if test="username !=null and username !=''">
+            and username like "%"#{username}"%"
+        </if>
+
+        <if test="name !=null and name !=''">
+            and `name` like "%"#{name}"%"
+        </if>
+
+        <if test="status !=null and status !=''">
+            and `status`=#{status}
+        </if>
+
+        <if test="proxyId !=null and proxyId !=''">
+            and `proxy_id`=#{proxyId}
+        </if>
+
+        <if test="merchantId !=null and merchantId !=''">
+            and su.id=#{merchantId}
+        </if>
+
+        <if test='jyl !=null and jyl == "1"'>
+            and a.`jrcg` <![CDATA[  >  ]]> 0
+        </if>
+
+        <if test='jyl !=null and jyl == "0"'>
+            and ( a.`jrcg` is null or a.`jrcg` <![CDATA[  <=  ]]> 0 )
+        </if>
+
+    </select>
+
+    <select id="queryMerchantByProxy" parameterType="Map" resultType="Map">
+        select id,`username`,`name`
+        from sys_user
+        where type=2 and proxy_id=#{id}
+    </select>
+
+</mapper>

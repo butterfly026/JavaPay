@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd"
+        >
+<mapper namespace="com.city.city_collector.admin.pay.dao.PayRechargeDao">
+    <!--查询分页数据-->
+    <select id="queryPage" parameterType="Map" resultType="Map">
+        SELECT pr.id id,pr.sn sn,pr.merchant_id merchantId,su.username merchantNo,su.`name` merchantName,pr.money
+        money,pr.acc_type accType,
+        pr.card_no cardNo,pr.card_name cardName,pr.bank_name bankName,pr.bank_ifsc bankIfsc,pr.bank_nation bankNation,
+        pr.`status` `status`,pr.remark remark,pr.create_time createTime,smodel
+        from pay_recharge pr
+        inner join sys_user su on pr.merchant_id=su.id
+        <where>
+            <if test="sn !=null and sn !=''">
+                and sn=#{sn}
+            </if>
+
+            <if test="merchantNo !=null and merchantNo !=''">
+                and su.username=#{merchantNo}
+            </if>
+
+            <if test="merchantId !=null and merchantId !=''">
+                and pr.merchant_id=#{merchantId}
+            </if>
+
+            <if test="cardNo !=null and cardNo !=''">
+                and pr.card_no=#{cardNo}
+            </if>
+
+            <if test="accType !=null and accType !=''">
+                and acc_type=#{accType}
+            </if>
+
+            <if test="status !=null and status !=''">
+                and pr.`status`=#{status}
+            </if>
+
+        </where>
+        <if test="orderby !=null and orderby !=''">
+            order by ${orderby}
+        </if>
+        <if test="orderby ==null">
+            order by pr.CREATE_TIME desc
+        </if>
+        limit #{start},#{end}
+    </select>
+    <!--查询总体记录数-->
+    <select id="queryCount" parameterType="Map" resultType="int">
+        SELECT count(1) count
+        from pay_recharge pr
+        inner join sys_user su on pr.merchant_id=su.id
+        <where>
+            <if test="sn !=null and sn !=''">
+                and sn=#{sn}
+            </if>
+
+            <if test="merchantId !=null and merchantId !=''">
+                and pr.merchant_id=#{merchantId}
+            </if>
+
+            <if test="merchantNo !=null and merchantNo !=''">
+                and su.username=#{merchantNo}
+            </if>
+
+            <if test="cardNo !=null and cardNo !=''">
+                and pr.card_no=#{cardNo}
+            </if>
+
+            <if test="accType !=null and accType !=''">
+                and acc_type=#{accType}
+            </if>
+
+            <if test="status !=null and status !=''">
+                and pr.`status`=#{status}
+            </if>
+
+        </where>
+    </select>
+    <!--添加记录-->
+    <insert id="addSave" parameterType="com.city.city_collector.admin.pay.entity.PayRecharge" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into
+        pay_recharge(sn,merchant_id,money,acc_type,card_no,card_name,bank_name,bank_ifsc,bank_nation,`status`,remark,smodel)
+        value(#{sn},#{merchantId},#{money},#{accType},#{cardNo},#{cardName},#{bankName},#{bankIfsc},#{bankNation},#{status},#{remark},#{smodel})
+    </insert>
+    <!--查询单条记录-->
+    <select id="querySingle" parameterType="Map" resultType="com.city.city_collector.admin.pay.entity.PayRecharge">
+        select pr.id id,pr.sn sn,pr.merchant_id merchantId,su.username merchantNo,su.`name` merchantName,pr.money
+        money,pr.acc_type accType,
+        pr.card_no cardNo,pr.card_name cardName,pr.bank_name bankName,pr.bank_ifsc bankIfsc,pr.bank_nation bankNation,
+        pr.`status` `status`,pr.remark remark,pr.smodel smodel
+        from pay_recharge pr
+        inner join sys_user su on pr.merchant_id=su.id
+        where pr.id=#{id}
+        <if test="merchantId !=null and merchantId !=''">
+            and pr.merchant_id=#{merchantId}
+        </if>
+    </select>
+    <!--编辑数据-->
+    <update id="editSave" parameterType="com.city.city_collector.admin.pay.entity.PayRecharge">
+        update pay_recharge
+        set
+        acc_type=#{accType},
+        card_no=#{cardNo},
+        card_name=#{cardName},
+        bank_name=#{bankName},
+        bank_ifsc=#{bankIfsc},
+        bank_nation=#{bankNation},
+        `status`=#{status},
+        remark=#{remark},
+        smodel=#{smodel}
+        where id=#{id}
+    </update>
+
+    <!--删除数据-->
+    <delete id="delete" parameterType="java.lang.String">
+        delete from pay_recharge where id in (${_parameter})
+    </delete>
+</mapper>

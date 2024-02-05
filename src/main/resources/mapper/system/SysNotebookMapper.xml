@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper   PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd"
+        >
+<mapper namespace="com.city.city_collector.admin.system.dao.SysNotebookDao">
+
+    <!--查询分页数据-->
+    <select id="page" parameterType="Map" resultType="Map">
+        <bind name="titleLike" value="'%' + title + '%'"/>
+        <bind name="contentLike" value="'%' + content + '%'"/>
+        <bind name="linkContentLike" value="'%' + linkContent + '%'"/>
+        SELECT id ,user_id userId,username ,title,content,link_content linkContent ,update_by updateBy ,up_username
+        upUsername,create_time createTime ,update_time updateTime
+        from sys_noteboook
+        <where>
+            <if test=" title  !=null and title !='' ">
+                and title like #{titleLike}
+            </if>
+            <if test=" content  !=null and content !='' ">
+                and content like #{contentLike}
+            </if>
+            <if test=" linkContent  !=null and linkContent !='' ">
+                and link_content like #{linkContentLike}
+            </if>
+        </where>
+        order by create_time,update_time desc
+        limit #{start},#{end}
+    </select>
+
+    <!--查询总体记录数-->
+    <select id="count" parameterType="Map" resultType="int">
+        <bind name="titleLike" value="'%' + title + '%'"/>
+        <bind name="contentLike" value="'%' + content + '%'"/>
+        <bind name="linkContentLike" value="'%' + linkContent + '%'"/>
+        SELECT count(1) count
+        from sys_noteboook
+        <where>
+            <if test=" title  !=null and title !='' ">
+                and title like #{titleLike}
+            </if>
+            <if test=" content  !=null and content !='' ">
+                and content like #{contentLike}
+            </if>
+            <if test=" linkContent  !=null and linkContent !='' ">
+                and link_content like #{linkContentLike}
+            </if>
+        </where>
+    </select>
+
+    <!--添加记录-->
+    <insert id="insert" parameterType="com.city.city_collector.admin.system.entity.SysNotebook" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into sys_noteboook(user_id,username,title,content,link_content,create_time)
+        value(#{userId},#{username},#{title},#{content},#{linkContent},#{createTime})
+    </insert>
+
+    <!--编辑数据-->
+    <update id="update" parameterType="com.city.city_collector.admin.system.entity.SysNotebook">
+        update sys_noteboook
+        <set>
+            <if test="title !=null and title !=''">
+                title=#{title},
+            </if>
+            <if test="content !=null and content !=''">
+                content=#{content},
+            </if>
+            <if test="linkContent !=null and linkContent !=''">
+                link_content=#{linkContent},
+            </if>
+            <if test="updateBy !=null and updateBy !=''">
+                update_by=#{updateBy},
+            </if>
+            <if test="upUsername !=null and upUsername !=''">
+                up_username=#{upUsername},
+            </if>
+            <if test="updateTime !=null ">
+                update_time=#{updateTime},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+
+    <!--查询单条记录-->
+    <select id="query" parameterType="Map" resultType="com.city.city_collector.admin.system.entity.SysNotebook">
+        select id ,user_id userId,username ,title,content,link_content linkContent ,update_by updateBy ,up_username
+        upUsername,create_time createTime ,update_time updateTime
+        from sys_noteboook where id=#{id}
+    </select>
+
+
+</mapper>

@@ -1,0 +1,6 @@
+target
+.idea
+/src/main/resources/application-uat.properties
+/src/main/resources/application.properties
+/src/main/resources/static/lib/ueditor1.4.3.2/third-party/snapscreen/UEditorSnapscreen.exe
+/src/main/resources/static/lib/ueditor1.4.3.2/third-party/snapscreen
